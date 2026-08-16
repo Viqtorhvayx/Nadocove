@@ -107,6 +107,49 @@ export function usePlaceOrder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subaccount-summary"] });
+      queryClient.invalidateQueries({ queryKey: ["open-orders"] });
+    },
+  });
+}
+
+export function useOpenOrders(productId: number | undefined) {
+  const { address } = useAccount();
+  const nadoClient = useNadoClient();
+
+  return useQuery({
+    queryKey: ["open-orders", address, DEFAULT_SUBACCOUNT_NAME, productId],
+    queryFn: () =>
+      nadoClient!.market.getOpenSubaccountOrders({
+        subaccountOwner: address!,
+        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        productId: productId!,
+      }),
+    enabled: Boolean(nadoClient && address && productId !== undefined),
+    refetchInterval: 10_000,
+  });
+}
+
+export function useCancelOrder() {
+  const nadoClient = useNadoClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      digest,
+      productId,
+    }: {
+      digest: string;
+      productId: number;
+    }) => {
+      if (!nadoClient) throw new Error("Connect a wallet first.");
+      return nadoClient.market.cancelOrders({
+        digests: [digest],
+        productIds: [productId],
+        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["open-orders"] });
     },
   });
 }

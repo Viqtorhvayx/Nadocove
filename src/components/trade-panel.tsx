@@ -1,10 +1,60 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { OrderExecutionType } from "@nadohq/shared";
+import { removeDecimals, type OrderExecutionType } from "@nadohq/shared";
 import { Card } from "@/components/card";
-import { usePlaceOrder, useSymbols } from "@/lib/use-subaccount-data";
+import {
+  useCancelOrder,
+  useOpenOrders,
+  usePlaceOrder,
+  useSymbols,
+} from "@/lib/use-subaccount-data";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
+
+function OpenOrders({ productId }: { productId: number | undefined }) {
+  const openOrders = useOpenOrders(productId);
+  const cancelOrder = useCancelOrder();
+
+  const orders = openOrders.data?.orders ?? [];
+
+  if (productId === undefined) return null;
+  if (openOrders.isLoading) {
+    return <p className="text-xs text-foreground-muted">Loading orders…</p>;
+  }
+  if (orders.length === 0) {
+    return (
+      <p className="text-xs text-foreground-muted">
+        No open orders for this market.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {orders.map((order) => (
+        <div
+          key={order.digest}
+          className="flex items-center justify-between rounded-lg border border-border bg-surface-raised px-3 py-2 text-xs"
+        >
+          <span className="text-foreground">
+            {order.price.toString()} ×{" "}
+            {removeDecimals(order.unfilledAmount, 18).toString()}
+          </span>
+          <button
+            type="button"
+            onClick={() =>
+              cancelOrder.mutate({ digest: order.digest, productId })
+            }
+            disabled={cancelOrder.isPending}
+            className="text-negative hover:underline disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function TradePanel() {
   const symbolsQuery = useSymbols();
@@ -149,6 +199,13 @@ export function TradePanel() {
           <p className="text-sm text-positive">Order placed.</p>
         )}
       </form>
+
+      <div className="mt-6 border-t border-border pt-4">
+        <h3 className="mb-2 text-xs font-semibold text-foreground-muted">
+          Open orders
+        </h3>
+        <OpenOrders productId={selectedProductId} />
+      </div>
     </Card>
   );
 }
