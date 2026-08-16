@@ -21,7 +21,7 @@ export function LogoMark({ size = 32, className }: LogoMarkProps) {
     >
       <path
         d="M36.256 34.28 A16 16 0 1 1 36.256 13.72"
-        stroke="var(--color-cove-teal, #2DD4BF)"
+        stroke="var(--color-cove-indigo, #4C6EF5)"
         strokeWidth="5"
         strokeLinecap="round"
         fill="none"
@@ -44,7 +44,7 @@ export function Logo({ size = 28, className, wordmark = true }: LogoProps) {
           className="font-semibold tracking-tight text-foreground"
           style={{ fontSize: size * 0.64 }}
         >
-          Nado<span className="text-cove-teal">Cove</span>
+          Nado<span className="text-cove-indigo">Cove</span>
         </span>
       )}
     </span>

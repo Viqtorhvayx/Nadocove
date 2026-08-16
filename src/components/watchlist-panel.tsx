@@ -70,7 +70,7 @@ export function WatchlistPanel() {
             >
               <a
                 href={`/u/${address}`}
-                className="font-mono text-foreground hover:text-cove-teal"
+                className="font-mono text-foreground hover:text-cove-indigo"
               >
                 {truncateAddress(address)}
               </a>

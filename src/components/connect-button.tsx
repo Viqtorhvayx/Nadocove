@@ -35,7 +35,7 @@ export function ConnectButton({ className }: ConnectButtonProps) {
               <button
                 type="button"
                 onClick={openConnectModal}
-                className={`${baseClass} bg-cove-teal text-background hover:bg-cove-teal-dim`}
+                className={`${baseClass} bg-cove-indigo text-background hover:bg-cove-indigo-dim`}
               >
                 Connect Wallet
               </button>
@@ -51,7 +51,7 @@ export function ConnectButton({ className }: ConnectButtonProps) {
               <button
                 type="button"
                 onClick={openAccountModal}
-                className={`${baseClass} border border-border bg-surface text-foreground hover:border-cove-teal-dim`}
+                className={`${baseClass} border border-border bg-surface text-foreground hover:border-cove-indigo-dim`}
               >
                 {account.displayName}
               </button>

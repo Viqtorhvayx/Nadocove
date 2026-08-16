@@ -185,7 +185,7 @@ export function TradePanel() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-full bg-cove-teal px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-teal-dim disabled:opacity-50"
+          className="rounded-full bg-cove-indigo px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
         >
           Review {side === "buy" ? "buy" : "sell"} order
         </button>

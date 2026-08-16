@@ -32,7 +32,7 @@ function TabNav() {
             href={tab.href}
             className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition ${
               active
-                ? "border-cove-teal text-foreground"
+                ? "border-cove-indigo text-foreground"
                 : "border-transparent text-foreground-muted hover:text-foreground"
             }`}
           >

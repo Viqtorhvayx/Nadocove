@@ -20,7 +20,7 @@ export function ClaimBuilderFeeCard() {
         type="button"
         onClick={() => claim.mutate()}
         disabled={claim.isPending}
-        className="mt-4 rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground transition hover:border-cove-teal-dim disabled:opacity-50"
+        className="mt-4 rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground transition hover:border-cove-indigo-dim disabled:opacity-50"
       >
         {claim.isPending ? "Claiming…" : "Claim builder fees"}
       </button>

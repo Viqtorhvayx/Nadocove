@@ -8,7 +8,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { wagmiConfig } from "@/lib/wagmi";
 
 const nadoCoveTheme = darkTheme({
-  accentColor: "#2DD4BF",
+  accentColor: "#4C6EF5",
   accentColorForeground: "#0A0E14",
   borderRadius: "large",
 });

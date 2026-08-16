@@ -10,8 +10,8 @@
   --foreground-muted: #8b96a5;
 
   /* Brand accents */
-  --color-cove-teal: #2dd4bf;
-  --color-cove-teal-dim: #1f9c8c;
+  --color-cove-indigo: #4c6ef5;
+  --color-cove-indigo-dim: #3b5bdb;
   --color-cove-amber: #f5b942;
 
   /* Semantic (PnL, risk) */
@@ -26,8 +26,8 @@
   --color-border: var(--border);
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
-  --color-cove-teal: var(--color-cove-teal);
-  --color-cove-teal-dim: var(--color-cove-teal-dim);
+  --color-cove-indigo: var(--color-cove-indigo);
+  --color-cove-indigo-dim: var(--color-cove-indigo-dim);
   --color-cove-amber: var(--color-cove-amber);
   --color-positive: var(--color-positive);
   --color-negative: var(--color-negative);

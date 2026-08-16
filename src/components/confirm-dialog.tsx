@@ -48,7 +48,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={confirming}
-            className="flex-1 rounded-full bg-cove-teal px-4 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-teal-dim disabled:opacity-50"
+            className="flex-1 rounded-full bg-cove-indigo px-4 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
           >
             {confirming ? "Submitting…" : confirmLabel}
           </button>

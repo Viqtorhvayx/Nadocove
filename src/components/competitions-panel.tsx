@@ -58,8 +58,8 @@ export function CompetitionsPanel() {
               onClick={() => setSelectedContestId(contest.contestId)}
               className={`flex items-center justify-between py-3 text-left text-sm transition first:pt-0 last:pb-0 ${
                 selectedContestId === contest.contestId
-                  ? "text-cove-teal"
-                  : "text-foreground hover:text-cove-teal"
+                  ? "text-cove-indigo"
+                  : "text-foreground hover:text-cove-indigo"
               }`}
             >
               <span>
