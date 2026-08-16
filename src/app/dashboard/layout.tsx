@@ -10,6 +10,7 @@ import { SubaccountProvider } from "@/lib/subaccount-context";
 const TABS = [
   { href: "/dashboard", label: "Portfolio" },
   { href: "/dashboard/deposit", label: "Deposit" },
+  { href: "/dashboard/withdraw", label: "Withdraw" },
   { href: "/dashboard/trade", label: "Trade" },
   { href: "/dashboard/history", label: "History" },
   { href: "/dashboard/competitions", label: "Competitions" },
