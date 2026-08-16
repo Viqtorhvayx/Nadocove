@@ -8,6 +8,7 @@ import {
   type OrderExecutionType,
 } from "@nadohq/shared";
 import { useNadoClient } from "@/lib/use-nado-client";
+import { readOnlyNadoClient } from "@/lib/nado-read-client";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
 
 export const DEFAULT_SUBACCOUNT_NAME = "default";
@@ -44,13 +45,13 @@ export function useSubaccountFeeRates() {
   });
 }
 
+// Market symbols are public, account-independent data — always available via
+// the read-only client, no wallet connection required. Used on both the
+// dashboard (trade panel) and public profile pages (balance/position labels).
 export function useSymbols() {
-  const nadoClient = useNadoClient();
-
   return useQuery({
     queryKey: ["symbols"],
-    queryFn: () => nadoClient!.market.getSymbols(),
-    enabled: Boolean(nadoClient),
+    queryFn: () => readOnlyNadoClient.market.getSymbols(),
     staleTime: 60_000,
   });
 }

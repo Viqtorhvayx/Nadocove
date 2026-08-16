@@ -4,8 +4,11 @@ import { isAddress } from "viem";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
+import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
+import { BalancesTable } from "@/components/balances-table";
+import { PositionsTable } from "@/components/positions-table";
+import { FeeTierCard } from "@/components/fee-tier-card";
 import { PointsCard } from "@/components/points-card";
-import { safeStringify } from "@/lib/json";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
 
 function truncateAddress(address: string) {
@@ -52,43 +55,14 @@ export function AddressProfile({ address }: { address: string }) {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <Card title="Subaccount summary" note='"default"'>
-            {summary.isLoading && (
-              <p className="text-sm text-foreground-muted">Loading…</p>
-            )}
-            {summary.isError && (
-              <p className="text-sm text-negative">
-                {summary.error instanceof Error
-                  ? summary.error.message
-                  : "Failed to load."}
-              </p>
-            )}
-            {summary.data !== undefined && (
-              <pre className="max-h-64 overflow-auto rounded-lg bg-surface-raised p-3 text-xs text-foreground-muted">
-                {safeStringify(summary.data)}
-              </pre>
-            )}
-          </Card>
+        <PortfolioOverviewCard query={summary} />
 
-          <Card title="Fee tier">
-            {feeRates.isLoading && (
-              <p className="text-sm text-foreground-muted">Loading…</p>
-            )}
-            {feeRates.isError && (
-              <p className="text-sm text-negative">
-                {feeRates.error instanceof Error
-                  ? feeRates.error.message
-                  : "Failed to load."}
-              </p>
-            )}
-            {feeRates.data !== undefined && (
-              <pre className="max-h-64 overflow-auto rounded-lg bg-surface-raised p-3 text-xs text-foreground-muted">
-                {safeStringify(feeRates.data)}
-              </pre>
-            )}
-          </Card>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <BalancesTable query={summary} />
+          <PositionsTable query={summary} />
         </div>
+
+        <FeeTierCard query={feeRates} />
 
         <PointsCard address={address} />
 

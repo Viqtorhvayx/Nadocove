@@ -3,46 +3,14 @@
 import { useAccount } from "wagmi";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
-import { Card } from "@/components/card";
+import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
+import { BalancesTable } from "@/components/balances-table";
+import { PositionsTable } from "@/components/positions-table";
+import { FeeTierCard } from "@/components/fee-tier-card";
 import { TradePanel } from "@/components/trade-panel";
 import { PointsCard } from "@/components/points-card";
 import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
-import { safeStringify } from "@/lib/json";
-import {
-  DEFAULT_SUBACCOUNT_NAME,
-  useSubaccountFeeRates,
-  useSubaccountSummary,
-} from "@/lib/use-subaccount-data";
-
-function DataCard({
-  title,
-  note,
-  query,
-}: {
-  title: string;
-  note?: string;
-  query: { isLoading: boolean; isError: boolean; error: unknown; data: unknown };
-}) {
-  return (
-    <Card title={title} note={note}>
-      {query.isLoading && (
-        <p className="text-sm text-foreground-muted">Loading…</p>
-      )}
-      {query.isError && (
-        <p className="text-sm text-negative">
-          {query.error instanceof Error
-            ? query.error.message
-            : "Failed to load."}
-        </p>
-      )}
-      {!query.isLoading && !query.isError && (
-        <pre className="max-h-64 overflow-auto rounded-lg bg-surface-raised p-3 text-xs text-foreground-muted">
-          {safeStringify(query.data)}
-        </pre>
-      )}
-    </Card>
-  );
-}
+import { useSubaccountFeeRates, useSubaccountSummary } from "@/lib/use-subaccount-data";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
@@ -71,14 +39,14 @@ export default function DashboardPage() {
 
       {isConnected && address && (
         <main className="flex flex-1 flex-col gap-6 pb-16">
+          <PortfolioOverviewCard query={summary} />
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <DataCard
-              title="Subaccount summary"
-              note={`"${DEFAULT_SUBACCOUNT_NAME}"`}
-              query={summary}
-            />
-            <DataCard title="Fee tier" query={feeRates} />
+            <BalancesTable query={summary} />
+            <PositionsTable query={summary} />
           </div>
+
+          <FeeTierCard query={feeRates} />
 
           <PointsCard address={address} />
 
