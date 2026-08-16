@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
+import { TradePanel } from "@/components/trade-panel";
 import { safeStringify } from "@/lib/json";
 import {
   DEFAULT_SUBACCOUNT_NAME,
@@ -99,13 +100,7 @@ export default function DashboardPage() {
             </p>
           </Card>
 
-          <Card title="Trade" note="coming next" className="border-dashed">
-            <p className="text-sm text-foreground-muted">
-              Order entry ships here next, tagged with NadoCove&apos;s
-              Builder ID so every trade placed from this dashboard earns
-              builder fees automatically.
-            </p>
-          </Card>
+          <TradePanel />
         </main>
       )}
     </div>

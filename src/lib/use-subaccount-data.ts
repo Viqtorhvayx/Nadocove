@@ -1,6 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
+import BigNumber from "bignumber.js";
+import {
+  addDecimals,
+  nowInSeconds,
+  packOrderAppendix,
+  type OrderExecutionType,
+} from "@nadohq/shared";
 import { useNadoClient } from "@/lib/use-nado-client";
+import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
 
 export const DEFAULT_SUBACCOUNT_NAME = "default";
 
@@ -33,5 +41,72 @@ export function useSubaccountFeeRates() {
       }),
     enabled: Boolean(nadoClient && address),
     refetchInterval: 30_000,
+  });
+}
+
+export function useSymbols() {
+  const nadoClient = useNadoClient();
+
+  return useQuery({
+    queryKey: ["symbols"],
+    queryFn: () => nadoClient!.market.getSymbols(),
+    enabled: Boolean(nadoClient),
+    staleTime: 60_000,
+  });
+}
+
+type PlaceOrderInput = {
+  productId: number;
+  side: "buy" | "sell";
+  amount: string; // human units, e.g. "0.01"
+  price: string; // human units, e.g. "80000"
+  executionType: OrderExecutionType;
+  expirySeconds?: number;
+};
+
+export function usePlaceOrder() {
+  const { address } = useAccount();
+  const nadoClient = useNadoClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      side,
+      amount,
+      price,
+      executionType,
+      expirySeconds = 60,
+    }: PlaceOrderInput) => {
+      if (!nadoClient || !address) {
+        throw new Error("Connect a wallet first.");
+      }
+
+      const signedAmount = new BigNumber(amount).times(
+        side === "buy" ? 1 : -1,
+      );
+
+      const appendix = packOrderAppendix({
+        orderExecutionType: executionType,
+        builder:
+          BUILDER_ID > 0
+            ? { builderId: BUILDER_ID, builderFeeRate: BUILDER_FEE_RATE }
+            : undefined,
+      });
+
+      return nadoClient.market.placeOrder({
+        order: {
+          subaccountName: DEFAULT_SUBACCOUNT_NAME,
+          expiration: nowInSeconds() + expirySeconds,
+          appendix,
+          price,
+          amount: addDecimals(signedAmount, 18),
+        },
+        productId,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subaccount-summary"] });
+    },
   });
 }
