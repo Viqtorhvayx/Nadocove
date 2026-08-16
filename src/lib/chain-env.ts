@@ -1,5 +1,5 @@
-// Switch to 'inkMainnet' once mainnet-ready; keeping testnet as the default
-// while this is under active development avoids accidentally routing real
-// funds. Split into its own module so both wagmi.ts and nado-endpoints.ts
-// can import it without a circular dependency.
-export const CHAIN_ENV = "inkTestnet" as const;
+// Ink mainnet — real funds. Every deposit, trade, and claim through this
+// app now moves real money; there is no faucet, no reset, no undo. Split
+// into its own module so both wagmi.ts and nado-endpoints.ts can import it
+// without a circular dependency.
+export const CHAIN_ENV = "inkMainnet" as const;
