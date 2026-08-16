@@ -8,6 +8,7 @@ import {
   calcSpotBalanceValue,
 } from "@nadohq/shared";
 import type { GetEngineSubaccountSummaryResponse } from "@nadohq/engine-client";
+import Link from "next/link";
 import { Card } from "@/components/card";
 import { formatUsd, formatSignedUsd, pnlColorClass } from "@/lib/format";
 
@@ -43,6 +44,12 @@ export function PortfolioOverviewCard({
         <p className="text-sm text-foreground-muted">
           No activity yet on this subaccount — nothing deposited or traded.
         </p>
+        <Link
+          href="/dashboard/deposit"
+          className="mt-4 inline-block rounded-full bg-cove-indigo px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim"
+        >
+          Make your first deposit
+        </Link>
       </Card>
     );
   }

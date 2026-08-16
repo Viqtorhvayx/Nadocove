@@ -60,9 +60,9 @@ export function ConfirmDialog({
 
 export function ConfirmRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-foreground-muted">{label}</span>
-      <span className="font-medium text-foreground">{value}</span>
+    <div className="flex items-start justify-between gap-4">
+      <span className="shrink-0 text-foreground-muted">{label}</span>
+      <span className="text-right font-medium text-foreground">{value}</span>
     </div>
   );
 }
