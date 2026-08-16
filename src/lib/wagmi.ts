@@ -1,10 +1,10 @@
 import { createConfig, http } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { CHAIN_ENV_TO_CHAIN } from "@nadohq/shared";
+import { CHAIN_ENV } from "@/lib/chain-env";
+import { proxyRpcUrl } from "@/lib/nado-endpoints";
 
-// Switch to 'ink' once mainnet-ready; keeping testnet as the default while
-// this is under active development avoids accidentally routing real funds.
-export const CHAIN_ENV = "inkTestnet" as const;
+export { CHAIN_ENV };
 
 const inkChain = CHAIN_ENV_TO_CHAIN[CHAIN_ENV];
 
@@ -17,7 +17,9 @@ export const wagmiConfig = createConfig({
     // walletConnect({ projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID! }),
   ],
   transports: {
-    [inkChain.id]: http(),
+    // Ink's RPC doesn't send CORS headers for browser origins — route
+    // through our server-side proxy instead. See nado-endpoints.ts.
+    [inkChain.id]: http(proxyRpcUrl()),
   },
 });
 

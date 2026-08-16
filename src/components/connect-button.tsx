@@ -12,7 +12,7 @@ function truncateAddress(address: string) {
 
 export function ConnectButton({ className }: ConnectButtonProps) {
   const { address, isConnected } = useAccount();
-  const { connect, connectors, isPending } = useConnect();
+  const { connect, connectors, isPending, error } = useConnect();
   const { disconnect } = useDisconnect();
 
   const baseClass =
@@ -34,13 +34,22 @@ export function ConnectButton({ className }: ConnectButtonProps) {
   const injectedConnector = connectors.find((c) => c.id === "injected") ?? connectors[0];
 
   return (
-    <button
-      type="button"
-      disabled={isPending || !injectedConnector}
-      onClick={() => injectedConnector && connect({ connector: injectedConnector })}
-      className={`${baseClass} bg-cove-teal text-background hover:bg-cove-teal-dim`}
-    >
-      {isPending ? "Connecting…" : "Connect Wallet"}
-    </button>
+    <div className="flex flex-col items-end gap-1.5">
+      <button
+        type="button"
+        disabled={isPending || !injectedConnector}
+        onClick={() => injectedConnector && connect({ connector: injectedConnector })}
+        className={`${baseClass} bg-cove-teal text-background hover:bg-cove-teal-dim`}
+      >
+        {isPending ? "Connecting…" : "Connect Wallet"}
+      </button>
+      {error && (
+        <span className="max-w-[220px] text-right text-xs text-negative">
+          {/wallet|provider/i.test(error.message)
+            ? "No wallet extension found — install MetaMask or similar."
+            : error.message}
+        </span>
+      )}
+    </div>
   );
 }
