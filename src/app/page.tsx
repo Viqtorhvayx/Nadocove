@@ -1,5 +1,6 @@
 import { Logo, LogoMark } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
+import { AddressLookup } from "@/components/address-lookup";
 
 const FEATURES = [
   {
@@ -73,6 +74,7 @@ export default function Home() {
               See what&apos;s inside →
             </a>
           </div>
+          <AddressLookup />
         </section>
 
         <section
