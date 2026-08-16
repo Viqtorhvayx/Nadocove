@@ -6,6 +6,7 @@ import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
 import { TradePanel } from "@/components/trade-panel";
 import { PointsCard } from "@/components/points-card";
+import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
 import { safeStringify } from "@/lib/json";
 import {
   DEFAULT_SUBACCOUNT_NAME,
@@ -82,6 +83,8 @@ export default function DashboardPage() {
           <PointsCard address={address} />
 
           <TradePanel />
+
+          <ClaimBuilderFeeCard />
         </main>
       )}
     </div>
