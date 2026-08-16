@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  /* Storm sky base */
+  --background: #0a0e14;
+  --surface: #11161f;
+  --surface-raised: #161c27;
+  --border: #1f2733;
+  --foreground: #e7edf3;
+  --foreground-muted: #8b96a5;
+
+  /* Brand accents */
+  --color-cove-teal: #2dd4bf;
+  --color-cove-teal-dim: #1f9c8c;
+  --color-cove-amber: #f5b942;
+
+  /* Semantic (PnL, risk) */
+  --color-positive: #34d399;
+  --color-negative: #f87171;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-cove-teal: var(--color-cove-teal);
+  --color-cove-teal-dim: var(--color-cove-teal-dim);
+  --color-cove-amber: var(--color-cove-amber);
+  --color-positive: var(--color-positive);
+  --color-negative: var(--color-negative);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
