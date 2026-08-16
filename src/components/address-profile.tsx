@@ -4,6 +4,7 @@ import { isAddress } from "viem";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
+import { PointsCard } from "@/components/points-card";
 import { safeStringify } from "@/lib/json";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
 
@@ -88,6 +89,8 @@ export function AddressProfile({ address }: { address: string }) {
             )}
           </Card>
         </div>
+
+        <PointsCard address={address} />
 
         <Card title="Want a dashboard like this for your own account?" className="border-dashed">
           <p className="text-sm text-foreground-muted">

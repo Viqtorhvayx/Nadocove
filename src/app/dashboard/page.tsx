@@ -5,6 +5,7 @@ import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
 import { TradePanel } from "@/components/trade-panel";
+import { PointsCard } from "@/components/points-card";
 import { safeStringify } from "@/lib/json";
 import {
   DEFAULT_SUBACCOUNT_NAME,
@@ -78,27 +79,7 @@ export default function DashboardPage() {
             <DataCard title="Fee tier" query={feeRates} />
           </div>
 
-          <Card
-            title="Points & Season 2 pool"
-            note="coming next"
-            className="border-dashed"
-          >
-            <p className="text-sm text-foreground-muted">
-              Season 2&apos;s weekly points pool scales 300K–950K with
-              protocol volume. Wiring this card up to your live share
-              requires confirming the indexer&apos;s points route — tracked
-              as a follow-up. In the meantime,{" "}
-              <a
-                href="https://docs.nado.xyz/incentives-and-rewards/points/season-2-live"
-                target="_blank"
-                rel="noreferrer"
-                className="underline decoration-border underline-offset-2 hover:text-foreground"
-              >
-                see the Season 2 docs
-              </a>
-              .
-            </p>
-          </Card>
+          <PointsCard address={address} />
 
           <TradePanel />
         </main>
