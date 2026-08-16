@@ -9,20 +9,22 @@ import {
 } from "@nadohq/shared";
 import { useNadoClient } from "@/lib/use-nado-client";
 import { readOnlyNadoClient } from "@/lib/nado-read-client";
+import { useActiveSubaccount } from "@/lib/subaccount-context";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
 
-export const DEFAULT_SUBACCOUNT_NAME = "default";
+export { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
 
 export function useSubaccountSummary() {
   const { address } = useAccount();
+  const { subaccountName } = useActiveSubaccount();
   const nadoClient = useNadoClient();
 
   return useQuery({
-    queryKey: ["subaccount-summary", address, DEFAULT_SUBACCOUNT_NAME],
+    queryKey: ["subaccount-summary", address, subaccountName],
     queryFn: () =>
       nadoClient!.subaccount.getSubaccountSummary({
         subaccountOwner: address!,
-        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        subaccountName,
       }),
     enabled: Boolean(nadoClient && address),
     refetchInterval: 15_000,
@@ -31,14 +33,15 @@ export function useSubaccountSummary() {
 
 export function useSubaccountFeeRates() {
   const { address } = useAccount();
+  const { subaccountName } = useActiveSubaccount();
   const nadoClient = useNadoClient();
 
   return useQuery({
-    queryKey: ["subaccount-fee-rates", address, DEFAULT_SUBACCOUNT_NAME],
+    queryKey: ["subaccount-fee-rates", address, subaccountName],
     queryFn: () =>
       nadoClient!.subaccount.getSubaccountFeeRates({
         subaccountOwner: address!,
-        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        subaccountName,
       }),
     enabled: Boolean(nadoClient && address),
     refetchInterval: 30_000,
@@ -67,6 +70,7 @@ type PlaceOrderInput = {
 
 export function usePlaceOrder() {
   const { address } = useAccount();
+  const { subaccountName } = useActiveSubaccount();
   const nadoClient = useNadoClient();
   const queryClient = useQueryClient();
 
@@ -97,7 +101,7 @@ export function usePlaceOrder() {
 
       return nadoClient.market.placeOrder({
         order: {
-          subaccountName: DEFAULT_SUBACCOUNT_NAME,
+          subaccountName,
           expiration: nowInSeconds() + expirySeconds,
           appendix,
           price,
@@ -115,14 +119,15 @@ export function usePlaceOrder() {
 
 export function useOpenOrders(productId: number | undefined) {
   const { address } = useAccount();
+  const { subaccountName } = useActiveSubaccount();
   const nadoClient = useNadoClient();
 
   return useQuery({
-    queryKey: ["open-orders", address, DEFAULT_SUBACCOUNT_NAME, productId],
+    queryKey: ["open-orders", address, subaccountName, productId],
     queryFn: () =>
       nadoClient!.market.getOpenSubaccountOrders({
         subaccountOwner: address!,
-        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        subaccountName,
         productId: productId!,
       }),
     enabled: Boolean(nadoClient && address && productId !== undefined),
@@ -131,6 +136,7 @@ export function useOpenOrders(productId: number | undefined) {
 }
 
 export function useCancelOrder() {
+  const { subaccountName } = useActiveSubaccount();
   const nadoClient = useNadoClient();
   const queryClient = useQueryClient();
 
@@ -146,7 +152,7 @@ export function useCancelOrder() {
       return nadoClient.market.cancelOrders({
         digests: [digest],
         productIds: [productId],
-        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        subaccountName,
       });
     },
     onSuccess: () => {

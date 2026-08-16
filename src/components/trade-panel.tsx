@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import BigNumber from "bignumber.js";
 import { removeDecimals, type OrderExecutionType } from "@nadohq/shared";
 import { Card } from "@/components/card";
+import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
+import { formatUsd } from "@/lib/format";
 import {
   useCancelOrder,
   useOpenOrders,
@@ -71,14 +74,21 @@ export function TradePanel() {
     useState<OrderExecutionType>("default");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const selectedProductId = productId ?? symbols[0]?.productId;
+  const selectedSymbol = symbols.find((s) => s.productId === selectedProductId)?.symbol;
 
   const canSubmit =
     selectedProductId !== undefined &&
     Number(amount) > 0 &&
     Number(price) > 0 &&
     !placeOrder.isPending;
+
+  const notional =
+    Number(amount) > 0 && Number(price) > 0
+      ? new BigNumber(amount).times(price)
+      : undefined;
 
   return (
     <Card
@@ -93,14 +103,8 @@ export function TradePanel() {
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          if (selectedProductId === undefined) return;
-          placeOrder.mutate({
-            productId: selectedProductId,
-            side,
-            amount,
-            price,
-            executionType,
-          });
+          if (!canSubmit) return;
+          setConfirmOpen(true);
         }}
       >
         <div className="grid grid-cols-2 gap-3">
@@ -183,9 +187,7 @@ export function TradePanel() {
           disabled={!canSubmit}
           className="rounded-full bg-cove-teal px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-teal-dim disabled:opacity-50"
         >
-          {placeOrder.isPending
-            ? "Placing…"
-            : `${side === "buy" ? "Buy" : "Sell"}`}
+          Review {side === "buy" ? "buy" : "sell"} order
         </button>
 
         {placeOrder.isError && (
@@ -199,6 +201,49 @@ export function TradePanel() {
           <p className="text-sm text-positive">Order placed.</p>
         )}
       </form>
+
+      <ConfirmDialog
+        title={`Confirm ${side} order`}
+        open={confirmOpen}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          if (selectedProductId === undefined) return;
+          placeOrder.mutate(
+            { productId: selectedProductId, side, amount, price, executionType },
+            { onSuccess: () => setConfirmOpen(false) },
+          );
+        }}
+        confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${selectedSymbol ?? ""}`}
+        confirming={placeOrder.isPending}
+      >
+        <ConfirmRow label="Market" value={selectedSymbol ?? "—"} />
+        <ConfirmRow
+          label="Side"
+          value={<span className="capitalize">{side}</span>}
+        />
+        <ConfirmRow
+          label="Type"
+          value={
+            executionType === "default"
+              ? "Limit"
+              : executionType === "ioc"
+                ? "Market (IOC)"
+                : "Post only"
+          }
+        />
+        <ConfirmRow label="Amount" value={amount || "—"} />
+        <ConfirmRow label="Price" value={price ? formatUsd(new BigNumber(price)) : "—"} />
+        <ConfirmRow
+          label="Notional"
+          value={notional ? formatUsd(notional) : "—"}
+        />
+        {BUILDER_ID > 0 && (
+          <ConfirmRow
+            label="Builder fee"
+            value={`${BUILDER_FEE_RATE / 100}bps to NadoCove`}
+          />
+        )}
+      </ConfirmDialog>
 
       <div className="mt-6 border-t border-border pt-4">
         <h3 className="mb-2 text-xs font-semibold text-foreground-muted">

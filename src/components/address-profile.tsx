@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { isAddress } from "viem";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
@@ -9,15 +10,24 @@ import { BalancesTable } from "@/components/balances-table";
 import { PositionsTable } from "@/components/positions-table";
 import { FeeTierCard } from "@/components/fee-tier-card";
 import { PointsCard } from "@/components/points-card";
+import { TradeHistoryTable } from "@/components/trade-history-table";
+import { SubaccountSelector } from "@/components/subaccount-selector";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
+import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
+import { useWatchlist } from "@/lib/use-watchlist";
 
 function truncateAddress(address: string) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
 export function AddressProfile({ address }: { address: string }) {
-  const summary = useAddressSummary(address);
-  const feeRates = useAddressFeeRates(address);
+  const [subaccountName, setSubaccountName] = useState(DEFAULT_SUBACCOUNT_NAME);
+  const summary = useAddressSummary(address, subaccountName);
+  const feeRates = useAddressFeeRates(address, subaccountName);
+  const watchlist = useWatchlist();
+  const isWatched = watchlist.addresses.some(
+    (a) => a.toLowerCase() === address.toLowerCase(),
+  );
 
   if (!isAddress(address)) {
     return (
@@ -46,13 +56,31 @@ export function AddressProfile({ address }: { address: string }) {
       </header>
 
       <main className="flex flex-1 flex-col gap-6 pb-16">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
-            Public profile · read-only
-          </span>
-          <h1 className="font-mono text-2xl font-semibold text-foreground">
-            {truncateAddress(address)}
-          </h1>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+              Public profile · read-only
+            </span>
+            <h1 className="font-mono text-2xl font-semibold text-foreground">
+              {truncateAddress(address)}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() =>
+                isWatched ? watchlist.remove(address) : watchlist.add(address)
+              }
+              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:text-foreground"
+            >
+              {isWatched ? "★ On watchlist" : "☆ Add to watchlist"}
+            </button>
+            <SubaccountSelector
+              ownerAddress={address}
+              value={subaccountName}
+              onChange={setSubaccountName}
+            />
+          </div>
         </div>
 
         <PortfolioOverviewCard query={summary} />
@@ -63,6 +91,8 @@ export function AddressProfile({ address }: { address: string }) {
         </div>
 
         <FeeTierCard query={feeRates} />
+
+        <TradeHistoryTable owner={address} subaccountName={subaccountName} />
 
         <PointsCard address={address} />
 

@@ -8,24 +8,27 @@ import {
 } from "@nadohq/shared";
 import { CHAIN_ENV } from "@/lib/wagmi";
 import { BUILDER_ID } from "@/lib/builder";
-import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/use-subaccount-data";
+import { useActiveSubaccount } from "@/lib/subaccount-context";
 
 /**
  * Claims accumulated builder fees to the builder's subaccount via the
  * Endpoint contract's slow-mode transaction queue (tx type 31).
  *
- * Note: this only submits the claim — there's no verified way to preview
- * the claimable amount first. The docs reference a `getClaimableBuilderFee`
- * view function on an "OffchainExchange" contract, but that name doesn't
- * match any of the currently deployed contracts (clearinghouse, endpoint,
- * perpEngine, querier, spotEngine, withdrawPool) or their ABIs in this SDK
- * version — likely stale docs. Rather than guess at an unverifiable read,
- * this ships the claim action alone; a balance preview is a follow-up once
- * the correct contract/ABI can be confirmed.
+ * There is no verified way to preview the claimable amount first —
+ * confirmed by two separate checks: (1) the docs reference a
+ * `getClaimableBuilderFee` view function on an "OffchainExchange" contract
+ * that doesn't match any of the six currently deployed contracts
+ * (clearinghouse, endpoint, perpEngine, querier, spotEngine, withdrawPool);
+ * (2) grepping all six contracts' ABIs directly for any function containing
+ * "builder" returns nothing, and grepping the indexer client's full method
+ * list for anything builder-related also returns nothing. This isn't a gap
+ * I missed — the read path genuinely doesn't exist in this SDK version. A
+ * balance preview isn't buildable until Nado exposes one.
  */
 export function useClaimBuilderFee() {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { subaccountName } = useActiveSubaccount();
 
   return useMutation({
     mutationFn: async () => {
@@ -38,7 +41,7 @@ export function useClaimBuilderFee() {
 
       const sender = subaccountToBytes32({
         subaccountOwner: address,
-        subaccountName: DEFAULT_SUBACCOUNT_NAME,
+        subaccountName,
       });
 
       const tx = encodeClaimBuilderFeeTx({
