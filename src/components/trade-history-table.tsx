@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 import { useMatchHistory } from "@/lib/use-match-history";
@@ -18,7 +19,14 @@ export function TradeHistoryTable({
   return (
     <Card title="Trade history" note={`"${subaccountName}"`}>
       {history.isLoading && (
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+          ))}
+        </div>
       )}
       {history.isError && (
         <p className="text-sm text-negative">

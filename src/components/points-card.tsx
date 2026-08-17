@@ -2,6 +2,7 @@
 
 import BigNumber from "bignumber.js";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { usePoints } from "@/lib/use-points";
 
 function formatPoints(value: BigNumber | undefined) {
@@ -22,7 +23,14 @@ export function PointsCard({ address }: { address: string | undefined }) {
   return (
     <Card title="Points" note="Season 2">
       {points.isLoading && (
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-5 w-16" />
+            </div>
+          ))}
+        </div>
       )}
       {points.isError && (
         <p className="text-sm text-negative">
@@ -34,26 +42,26 @@ export function PointsCard({ address }: { address: string | undefined }) {
       {points.data && (
         <div className="flex flex-col gap-4">
           {currentEpoch ? (
-            <div className="grid grid-cols-3 gap-4">
-              <div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="min-w-0">
                 <div className="text-xs text-foreground-muted">
                   Epoch {currentEpoch.epoch}
                 </div>
-                <div className="text-lg font-semibold text-foreground">
+                <div className="break-words text-lg font-semibold text-foreground">
                   {formatPoints(currentEpoch.points)}
                 </div>
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="text-xs text-foreground-muted">Rank</div>
-                <div className="text-lg font-semibold text-foreground">
+                <div className="break-words text-lg font-semibold text-foreground">
                   #{currentEpoch.rank}
                 </div>
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="text-xs text-foreground-muted">
                   Epoch pool
                 </div>
-                <div className="text-lg font-semibold text-foreground">
+                <div className="break-words text-lg font-semibold text-foreground">
                   {formatPoints(currentEpoch.totalPoints)}
                 </div>
               </div>

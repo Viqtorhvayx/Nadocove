@@ -3,6 +3,7 @@
 import { useMemo, useState, type PointerEvent } from "react";
 import type { IndexerPortfolioPeriod } from "@nadohq/indexer-client";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatUsd } from "@/lib/format";
 import { PERFORMANCE_PERIODS, usePortfolioHistory } from "@/lib/use-portfolio-history";
 
@@ -112,7 +113,12 @@ export function PerformanceChart({
         </div>
       </div>
 
-      {history.isLoading && <p className="text-sm text-foreground-muted">Loading…</p>}
+      {history.isLoading && (
+        <div className="mt-2 flex flex-col gap-2">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-40 w-full" />
+        </div>
+      )}
       {history.isError && (
         <p className="text-sm text-negative">
           {history.error instanceof Error ? history.error.message : "Failed to load."}

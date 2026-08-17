@@ -3,6 +3,7 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { GetEngineSubaccountFeeRatesResponse } from "@nadohq/engine-client";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatPercent } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 
@@ -16,7 +17,17 @@ export function FeeTierCard({
   if (query.isLoading) {
     return (
       <Card title="Fee tier">
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-20" />
+              <div className="flex gap-6">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+            </div>
+          ))}
+        </div>
       </Card>
     );
   }

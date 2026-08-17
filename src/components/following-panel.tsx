@@ -42,7 +42,7 @@ export function FollowingPanel() {
           {following.data.map((addr) => (
             <div
               key={addr}
-              className="flex items-center justify-between py-2.5 text-sm first:pt-0 last:pb-0"
+              className="-mx-2 flex items-center justify-between rounded-lg px-2 py-2.5 text-sm transition hover:bg-surface-raised"
             >
               <a href={`/u/${addr}`} className="font-mono text-foreground hover:text-cove-indigo">
                 <Identity address={addr} />

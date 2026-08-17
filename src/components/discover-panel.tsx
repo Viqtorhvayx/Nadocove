@@ -5,6 +5,7 @@ import Link from "next/link";
 import BigNumber from "bignumber.js";
 import type { IndexerLeaderboardRankType } from "@nadohq/indexer-client";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatAmount, formatUsd, truncateAddress } from "@/lib/format";
 import { useAllContests, useContestLeaderboard } from "@/lib/use-competitions";
 import { useUsernames } from "@/lib/use-username";
@@ -58,7 +59,14 @@ export function DiscoverPanel() {
   if (contests.isLoading) {
     return (
       <Card title="Discover">
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+          ))}
+        </div>
       </Card>
     );
   }
@@ -125,7 +133,14 @@ export function DiscoverPanel() {
         </div>
 
         {leaderboard.isLoading && (
-          <p className="text-sm text-foreground-muted">Loading…</p>
+          <div className="flex flex-col gap-3">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div key={i} className="flex items-center justify-between">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
         )}
         {leaderboard.isError && (
           <p className="text-sm text-negative">
@@ -150,7 +165,7 @@ export function DiscoverPanel() {
                 <Link
                   key={p.subaccount.subaccountOwner + p.subaccount.subaccountName}
                   href={`/u/${p.subaccount.subaccountOwner}`}
-                  className="flex items-center justify-between gap-3 py-3 text-sm transition first:pt-0 last:pb-0 hover:text-cove-indigo"
+                  className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 text-sm transition hover:bg-surface-raised hover:text-cove-indigo"
                 >
                   <span className="flex items-center gap-3">
                     <span className="w-6 text-foreground-muted">

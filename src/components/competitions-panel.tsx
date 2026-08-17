@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatAmount, truncateAddress } from "@/lib/format";
 import { useActiveContests, useContestLeaderboard } from "@/lib/use-competitions";
 
@@ -18,7 +20,14 @@ export function CompetitionsPanel() {
   if (contests.isLoading) {
     return (
       <Card title="Trading competitions">
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="flex flex-col gap-3">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          ))}
+        </div>
       </Card>
     );
   }
@@ -52,10 +61,10 @@ export function CompetitionsPanel() {
               key={contest.contestId}
               type="button"
               onClick={() => setSelectedContestId(contest.contestId)}
-              className={`flex items-center justify-between py-3 text-left text-sm transition first:pt-0 last:pb-0 ${
+              className={`-mx-2 flex items-center justify-between rounded-lg px-2 py-3 text-left text-sm transition ${
                 selectedContestId === contest.contestId
-                  ? "text-cove-indigo"
-                  : "text-foreground hover:text-cove-indigo"
+                  ? "bg-surface-raised text-cove-indigo"
+                  : "text-foreground hover:bg-surface-raised hover:text-cove-indigo"
               }`}
             >
               <span>
@@ -75,7 +84,14 @@ export function CompetitionsPanel() {
       {selectedContestId !== undefined && (
         <Card title="Leaderboard" note={selectedContest?.title}>
           {leaderboard.isLoading && (
-            <p className="text-sm text-foreground-muted">Loading…</p>
+            <div className="flex flex-col gap-3">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              ))}
+            </div>
           )}
           {leaderboard.isError && (
             <p className="text-sm text-negative">
@@ -92,9 +108,10 @@ export function CompetitionsPanel() {
               {leaderboard.data.participants.map((p, i) => {
                 const track = defaultRankType ? p.tracks[defaultRankType] : undefined;
                 return (
-                  <div
+                  <Link
                     key={p.subaccount.subaccountOwner + p.subaccount.subaccountName}
-                    className="flex items-center justify-between py-2.5 text-sm first:pt-0 last:pb-0"
+                    href={`/u/${p.subaccount.subaccountOwner}`}
+                    className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 text-sm transition hover:bg-surface-raised hover:text-cove-indigo"
                   >
                     <span className="flex items-center gap-3">
                       <span className="w-6 text-foreground-muted">#{i + 1}</span>
@@ -105,7 +122,7 @@ export function CompetitionsPanel() {
                     <span className="text-foreground-muted">
                       {track ? formatAmount(track.value, 2) : "—"}
                     </span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

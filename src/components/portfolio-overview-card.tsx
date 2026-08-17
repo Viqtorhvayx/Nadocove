@@ -10,6 +10,7 @@ import {
 import type { GetEngineSubaccountSummaryResponse } from "@nadohq/engine-client";
 import Link from "next/link";
 import { Card } from "@/components/card";
+import { Skeleton } from "@/components/skeleton";
 import { formatUsd, formatSignedUsd, pnlColorClass } from "@/lib/format";
 
 export function PortfolioOverviewCard({
@@ -20,7 +21,15 @@ export function PortfolioOverviewCard({
   if (query.isLoading) {
     return (
       <Card title="Portfolio">
-        <p className="text-sm text-foreground-muted">Loading…</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-7 w-32" />
+            </div>
+          ))}
+        </div>
+        <Skeleton className="mt-4 h-1.5 w-full rounded-full" />
       </Card>
     );
   }
