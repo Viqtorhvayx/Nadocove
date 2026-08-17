@@ -2,12 +2,8 @@
 
 import { useState } from "react";
 import { Card } from "@/components/card";
-import { formatAmount } from "@/lib/format";
+import { formatAmount, truncateAddress } from "@/lib/format";
 import { useActiveContests, useContestLeaderboard } from "@/lib/use-competitions";
-
-function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
 
 export function CompetitionsPanel() {
   const contests = useActiveContests();

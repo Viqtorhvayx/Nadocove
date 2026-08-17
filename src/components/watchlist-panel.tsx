@@ -4,10 +4,7 @@ import { useState } from "react";
 import { isAddress } from "viem";
 import { Card } from "@/components/card";
 import { useWatchlist } from "@/lib/use-watchlist";
-
-function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
+import { truncateAddress } from "@/lib/format";
 
 export function WatchlistPanel() {
   const { addresses, add, remove } = useWatchlist();

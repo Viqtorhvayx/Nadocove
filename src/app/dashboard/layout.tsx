@@ -14,6 +14,7 @@ const TABS = [
   { href: "/dashboard/trade", label: "Trade" },
   { href: "/dashboard/history", label: "History" },
   { href: "/dashboard/competitions", label: "Competitions" },
+  { href: "/discover", label: "Discover" },
   { href: "/dashboard/watchlist", label: "Watchlist" },
   { href: "/dashboard/settings", label: "Settings" },
 ];

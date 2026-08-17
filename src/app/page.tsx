@@ -26,13 +26,19 @@ export default function Home() {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(60% 50% at 80% 0%, rgba(45,212,191,0.14), transparent 70%), radial-gradient(40% 35% at 15% 15%, rgba(245,185,66,0.08), transparent 70%)",
+            "radial-gradient(60% 50% at 80% 0%, rgba(76,110,245,0.16), transparent 70%), radial-gradient(40% 35% at 15% 15%, rgba(245,185,66,0.08), transparent 70%)",
         }}
       />
 
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
         <Logo size={26} />
         <nav className="flex items-center gap-6">
+          <a
+            href="/discover"
+            className="hidden text-sm text-foreground-muted transition hover:text-foreground sm:inline"
+          >
+            Discover
+          </a>
           <a
             href="/dashboard"
             className="hidden text-sm text-foreground-muted transition hover:text-foreground sm:inline"

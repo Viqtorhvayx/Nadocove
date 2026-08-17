@@ -15,10 +15,7 @@ import { SubaccountSelector } from "@/components/subaccount-selector";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
 import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
 import { useWatchlist } from "@/lib/use-watchlist";
-
-function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
+import { truncateAddress } from "@/lib/format";
 
 export function AddressProfile({ address }: { address: string }) {
   const [subaccountName, setSubaccountName] = useState(DEFAULT_SUBACCOUNT_NAME);

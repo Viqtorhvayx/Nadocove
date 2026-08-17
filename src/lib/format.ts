@@ -46,3 +46,7 @@ export function pnlColorClass(value: BigNumber): string {
   if (value.lt(0)) return "text-negative";
   return "text-foreground-muted";
 }
+
+export function truncateAddress(address: string): string {
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
