@@ -15,6 +15,7 @@ import { SubaccountSelector } from "@/components/subaccount-selector";
 import { PerformanceChart } from "@/components/performance-chart";
 import { ProfileBadges } from "@/components/profile-badges";
 import { Identity } from "@/components/identity";
+import { FollowButton, FollowStats } from "@/components/follow-button";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
 import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
 import { useWatchlist } from "@/lib/use-watchlist";
@@ -67,9 +68,11 @@ export function AddressProfile({ address }: { address: string }) {
             <p className="font-mono text-xs text-foreground-muted">
               {truncateAddress(address)}
             </p>
+            <FollowStats address={address} />
             <ProfileBadges address={address} subaccountName={subaccountName} />
           </div>
           <div className="flex items-center gap-3">
+            <FollowButton address={address} />
             <button
               type="button"
               onClick={() =>
