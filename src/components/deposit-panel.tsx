@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits } from "viem";
 import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
@@ -13,6 +13,12 @@ import {
   useDepositFlow,
   type DepositableToken,
 } from "@/lib/use-deposit";
+import {
+  canSubmitDeposit,
+  computeDepositAmountRaw,
+  computeExceedsBalance,
+  computeNeedsApproval,
+} from "@/lib/deposit-math";
 
 export function DepositPanel() {
   const { subaccountName } = useActiveSubaccount();
@@ -38,36 +44,27 @@ export function DepositPanel() {
   const allowance = useTokenAllowance(selectedProductId);
   const depositFlow = useDepositFlow();
 
-  const amountRaw = useMemo(() => {
-    if (!selectedToken || !amount || Number(amount) <= 0) return undefined;
-    try {
-      return parseUnits(amount, selectedToken.decimals);
-    } catch {
-      return undefined;
-    }
-  }, [selectedToken, amount]);
+  const amountRaw = useMemo(
+    () => computeDepositAmountRaw(amount, selectedToken?.decimals),
+    [selectedToken, amount],
+  );
 
   const walletBalanceHuman =
     selectedToken && walletBalance.data !== undefined
       ? formatUnits(walletBalance.data, selectedToken.decimals)
       : undefined;
 
-  // getTokenAllowance returns a BigNumber over the raw (undecimalled) token
-  // amount — same units as amountRaw, no human-decimal scaling either side.
   const allowanceRaw = allowance.data ? BigInt(allowance.data.toFixed(0)) : undefined;
-  const needsApproval =
-    amountRaw !== undefined && (allowanceRaw === undefined || allowanceRaw < amountRaw);
+  const needsApproval = computeNeedsApproval(amountRaw, allowanceRaw);
+  const exceedsBalance = computeExceedsBalance(amountRaw, walletBalance.data);
 
-  const exceedsBalance =
-    amountRaw !== undefined && walletBalance.data !== undefined && amountRaw > walletBalance.data;
-
-  const canSubmit =
-    selectedProductId !== undefined &&
-    amountRaw !== undefined &&
-    amountRaw > BigInt(0) &&
-    walletBalance.data !== undefined &&
-    !exceedsBalance &&
-    !depositFlow.isPending;
+  const canSubmit = canSubmitDeposit({
+    selectedProductId,
+    amountRaw,
+    walletBalanceLoaded: walletBalance.data !== undefined,
+    exceedsBalance,
+    isPending: depositFlow.isPending,
+  });
 
   return (
     <Card title="Deposit" note={`into subaccount "${subaccountName}"`}>

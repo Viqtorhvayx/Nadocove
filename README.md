@@ -16,6 +16,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Testing
+
+Unit tests cover the pure logic behind money-moving forms (deposit/withdraw
+amount and decimal math) and the proxy abuse guard — the parts of the app
+where a bug is a correctness bug, not just a display glitch.
+
+```bash
+npm test
+```
+
+This does **not** cover wallet connection, signing, or on-chain transaction
+submission — those need a real wallet and can't be exercised in an automated
+test run.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

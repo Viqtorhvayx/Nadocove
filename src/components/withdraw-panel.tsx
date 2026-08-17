@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import BigNumber from "bignumber.js";
 import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 import { useDepositableProductIds, useTokenMetadata, type DepositableToken } from "@/lib/use-deposit";
 import { useMaxWithdrawable, useWithdraw } from "@/lib/use-withdraw";
+import { canSubmitWithdraw, exceedsMaxWithdrawable } from "@/lib/withdraw-math";
 
 export function WithdrawPanel() {
   const { subaccountName } = useActiveSubaccount();
@@ -33,17 +33,15 @@ export function WithdrawPanel() {
 
   const maxWithdrawableHuman = maxWithdrawable.data?.toFixed();
 
-  const exceedsMax =
-    Number(amount) > 0 &&
-    maxWithdrawable.data !== undefined &&
-    new BigNumber(amount).gt(maxWithdrawable.data);
+  const exceedsMax = exceedsMaxWithdrawable(amount, maxWithdrawable.data);
 
-  const canSubmit =
-    selectedProductId !== undefined &&
-    Number(amount) > 0 &&
-    maxWithdrawable.data !== undefined &&
-    !exceedsMax &&
-    !withdraw.isPending;
+  const canSubmit = canSubmitWithdraw({
+    selectedProductId,
+    amount,
+    maxWithdrawableLoaded: maxWithdrawable.data !== undefined,
+    exceedsMax,
+    isPending: withdraw.isPending,
+  });
 
   return (
     <Card title="Withdraw" note={`from subaccount "${subaccountName}"`}>
