@@ -65,6 +65,7 @@ export function DepositPanel() {
     selectedProductId !== undefined &&
     amountRaw !== undefined &&
     amountRaw > BigInt(0) &&
+    walletBalance.data !== undefined &&
     !exceedsBalance &&
     !depositFlow.isPending;
 

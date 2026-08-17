@@ -41,6 +41,7 @@ export function WithdrawPanel() {
   const canSubmit =
     selectedProductId !== undefined &&
     Number(amount) > 0 &&
+    maxWithdrawable.data !== undefined &&
     !exceedsMax &&
     !withdraw.isPending;
 
