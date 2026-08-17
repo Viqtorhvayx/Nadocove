@@ -49,7 +49,7 @@ export function TradeHistoryTable({
                   ? fill.quoteFilled.abs()
                   : fill.quoteFilled.abs().div(fill.baseFilled.abs());
                 return (
-                  <tr key={fill.digest + fill.timestamp.toString()}>
+                  <tr key={fill.digest + fill.submissionIndex}>
                     <td className="py-2 text-foreground-muted">
                       {new Date(fill.timestamp.toNumber() * 1000).toLocaleString()}
                     </td>
