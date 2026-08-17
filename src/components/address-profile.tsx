@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { isAddress } from "viem";
+import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
@@ -34,7 +35,9 @@ export function AddressProfile({ address }: { address: string }) {
     return (
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
         <header className="flex items-center justify-between py-6">
-          <Logo size={24} />
+          <Link href="/">
+            <Logo size={24} />
+          </Link>
           <ConnectButton />
         </header>
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-24 text-center">
@@ -52,7 +55,9 @@ export function AddressProfile({ address }: { address: string }) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
       <header className="flex items-center justify-between py-6">
-        <Logo size={24} />
+        <Link href="/">
+          <Logo size={24} />
+        </Link>
         <ConnectButton />
       </header>
 

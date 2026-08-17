@@ -23,27 +23,35 @@ function TabNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b border-border">
-      {TABS.map((tab) => {
-        const active =
-          tab.href === "/dashboard"
-            ? pathname === "/dashboard"
-            : pathname.startsWith(tab.href);
-        return (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition ${
-              active
-                ? "border-cove-indigo text-foreground"
-                : "border-transparent text-foreground-muted hover:text-foreground"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </nav>
+    <div className="relative border-b border-border">
+      <nav className="flex gap-1 overflow-x-auto">
+        {TABS.map((tab) => {
+          const active =
+            tab.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(tab.href);
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition ${
+                active
+                  ? "border-cove-indigo text-foreground"
+                  : "border-transparent text-foreground-muted hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </nav>
+      {/* Hints that the tab bar scrolls sideways — nine tabs don't fit a
+          phone width, and overflow-x-auto alone gives no visual cue. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden"
+      />
+    </div>
   );
 }
 
@@ -55,7 +63,9 @@ export default function DashboardLayout({
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
       <header className="flex items-center justify-between py-6">
-        <Logo size={24} />
+        <Link href="/">
+          <Logo size={24} />
+        </Link>
         <ConnectButton />
       </header>
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo, LogoMark } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { AddressLookup } from "@/components/address-lookup";
@@ -30,21 +31,23 @@ export default function Home() {
         }}
       />
 
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Logo size={26} />
-        <nav className="flex items-center gap-6">
-          <a
+      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-6">
+        <Link href="/">
+          <Logo size={26} />
+        </Link>
+        <nav className="flex items-center gap-4 sm:gap-6">
+          <Link
             href="/discover"
-            className="hidden text-sm text-foreground-muted transition hover:text-foreground sm:inline"
+            className="text-sm text-foreground-muted transition hover:text-foreground"
           >
             Discover
-          </a>
-          <a
+          </Link>
+          <Link
             href="/dashboard"
-            className="hidden text-sm text-foreground-muted transition hover:text-foreground sm:inline"
+            className="text-sm text-foreground-muted transition hover:text-foreground"
           >
             Dashboard
-          </a>
+          </Link>
           <a
             href="https://docs.nado.xyz"
             target="_blank"

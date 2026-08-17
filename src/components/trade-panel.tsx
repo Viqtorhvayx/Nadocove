@@ -133,8 +133,8 @@ export function TradePanel() {
               }
               className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
             >
-              <option value="default">Limit (rests on book)</option>
-              <option value="ioc">Market (IOC, up to price)</option>
+              <option value="default">Limit</option>
+              <option value="ioc">Market (IOC)</option>
               <option value="post_only">Post only</option>
             </select>
           </label>

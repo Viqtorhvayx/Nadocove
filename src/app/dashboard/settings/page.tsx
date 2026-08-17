@@ -53,7 +53,10 @@ export default function SettingsTab() {
           Your subaccount balances, positions, and trade history are public
           on-chain data, readable by anyone who queries Nado&apos;s own API
           directly — including at{" "}
-          <code className="text-xs">nadocove.xyz/u/{address ?? "your-address"}</code>.
+          <code className="break-all text-xs">
+            nadocove.xyz/u/{address ?? "your-address"}
+          </code>
+          .
           There&apos;s no toggle here or anywhere else that can make this
           private: doing that for real would need Nado itself to restrict who
           can read it, not a setting in a third-party app like this one.

@@ -4,7 +4,7 @@ type LogoMarkProps = {
 };
 
 /**
- * The mark: a teal cove (open ring, mouth facing the water on the right)
+ * The mark: an indigo cove (open ring, mouth facing the water on the right)
  * cradling a calm amber center — the sheltered counterpoint to Nado's storm.
  */
 export function LogoMark({ size = 32, className }: LogoMarkProps) {

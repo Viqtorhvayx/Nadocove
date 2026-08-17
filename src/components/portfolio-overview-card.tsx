@@ -72,22 +72,22 @@ export function PortfolioOverviewCard({
       title="Portfolio"
       note={isHealthy ? "healthy" : "at risk"}
     >
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="min-w-0">
           <div className="text-xs text-foreground-muted">Total value</div>
-          <div className="text-2xl font-semibold text-foreground">
+          <div className="break-words text-2xl font-semibold text-foreground">
             {formatUsd(totalValue)}
           </div>
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="text-xs text-foreground-muted">Maintenance health</div>
-          <div className={`text-2xl font-semibold ${pnlColorClass(maintenance.health)}`}>
+          <div className={`break-words text-2xl font-semibold ${pnlColorClass(maintenance.health)}`}>
             {formatSignedUsd(maintenance.health)}
           </div>
         </div>
-        <div className="col-span-2 sm:col-span-1">
+        <div className="min-w-0">
           <div className="text-xs text-foreground-muted">Assets / Liabilities</div>
-          <div className="text-sm text-foreground">
+          <div className="break-words text-sm text-foreground">
             {formatUsd(maintenance.assets)} / {formatUsd(maintenance.liabilities)}
           </div>
         </div>

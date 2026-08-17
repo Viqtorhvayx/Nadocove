@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { AddressLookup } from "@/components/address-lookup";
@@ -7,7 +8,9 @@ export default function DiscoverPage() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
       <header className="flex items-center justify-between py-6">
-        <Logo size={24} />
+        <Link href="/">
+          <Logo size={24} />
+        </Link>
         <ConnectButton />
       </header>
 

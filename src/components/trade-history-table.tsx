@@ -30,7 +30,7 @@ export function TradeHistoryTable({
       )}
       {history.data && history.data.length > 0 && (
         <div className="max-h-[32rem] overflow-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="text-left text-xs text-foreground-muted">
                 <th className="pb-2 font-normal">Time</th>
