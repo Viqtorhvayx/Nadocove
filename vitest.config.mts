@@ -10,5 +10,9 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    env: {
+      // Fixed test-only secret — never used outside the test run.
+      AUTH_SECRET: "vitest-test-secret-do-not-use-in-production",
+    },
   },
 });

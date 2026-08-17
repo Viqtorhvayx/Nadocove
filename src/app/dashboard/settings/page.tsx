@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { Card } from "@/components/card";
 import { SubaccountSelector } from "@/components/subaccount-selector";
 import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
+import { SignInButton, SessionAddress } from "@/components/sign-in-button";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 
 export default function SettingsTab() {
@@ -12,6 +13,19 @@ export default function SettingsTab() {
 
   return (
     <>
+      <Card title="NadoCove identity" note="separate from your wallet connection">
+        <p className="mb-4 text-sm text-foreground-muted">
+          A wallet connection proves you can trade — it doesn&apos;t prove
+          who&apos;s making a request to NadoCove&apos;s own backend. Sign in
+          with a free signature (no gas, no transaction) to claim a username
+          or follow other traders.
+        </p>
+        <div className="flex items-center justify-between">
+          <SessionAddress />
+          <SignInButton />
+        </div>
+      </Card>
+
       <Card title="Subaccount" note="max 12 characters">
         <p className="mb-4 text-sm text-foreground-muted">
           Nado subaccounts are independent trading accounts under the same

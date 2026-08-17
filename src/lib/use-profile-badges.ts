@@ -15,7 +15,9 @@ export function useSocialAccount(address: string | undefined) {
       const res = await readOnlyNadoClient.context.indexerClient.listSocialAccounts({
         address: validAddress!,
       });
-      return res.accounts.find((a) => a.provider === "twitter");
+      // React Query rejects a queryFn returning undefined outright — null
+      // is the correct "no linked account" value here.
+      return res.accounts.find((a) => a.provider === "twitter") ?? null;
     },
     enabled: Boolean(validAddress),
     staleTime: 60_000,
