@@ -5,6 +5,7 @@ import { Card } from "@/components/card";
 import { SubaccountSelector } from "@/components/subaccount-selector";
 import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
 import { SignInButton, SessionAddress } from "@/components/sign-in-button";
+import { UsernameClaimCard } from "@/components/username-claim-card";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 
 export default function SettingsTab() {
@@ -25,6 +26,8 @@ export default function SettingsTab() {
           <SignInButton />
         </div>
       </Card>
+
+      <UsernameClaimCard />
 
       <Card title="Subaccount" note="max 12 characters">
         <p className="mb-4 text-sm text-foreground-muted">

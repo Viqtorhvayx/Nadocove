@@ -14,6 +14,7 @@ import { TradeHistoryTable } from "@/components/trade-history-table";
 import { SubaccountSelector } from "@/components/subaccount-selector";
 import { PerformanceChart } from "@/components/performance-chart";
 import { ProfileBadges } from "@/components/profile-badges";
+import { Identity } from "@/components/identity";
 import { useAddressSummary, useAddressFeeRates } from "@/lib/use-address-summary";
 import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
 import { useWatchlist } from "@/lib/use-watchlist";
@@ -60,9 +61,12 @@ export function AddressProfile({ address }: { address: string }) {
             <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
               Public profile · read-only
             </span>
-            <h1 className="font-mono text-2xl font-semibold text-foreground">
-              {truncateAddress(address)}
+            <h1 className="text-2xl font-semibold text-foreground">
+              <Identity address={address} />
             </h1>
+            <p className="font-mono text-xs text-foreground-muted">
+              {truncateAddress(address)}
+            </p>
             <ProfileBadges address={address} subaccountName={subaccountName} />
           </div>
           <div className="flex items-center gap-3">

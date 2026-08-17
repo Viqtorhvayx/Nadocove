@@ -7,6 +7,7 @@ import type { IndexerLeaderboardRankType } from "@nadohq/indexer-client";
 import { Card } from "@/components/card";
 import { formatAmount, formatUsd, truncateAddress } from "@/lib/format";
 import { useAllContests, useContestLeaderboard } from "@/lib/use-competitions";
+import { useUsernames } from "@/lib/use-username";
 
 const RANK_TYPE_LABEL: Record<IndexerLeaderboardRankType, string> = {
   roi: "Highest ROI",
@@ -43,6 +44,11 @@ export function DiscoverPanel() {
   const effectiveRankType = rankType ?? selectedContest?.tracks[0]?.rankType;
 
   const leaderboard = useContestLeaderboard(effectiveContestId, effectiveRankType);
+  const participantAddresses = useMemo(
+    () => leaderboard.data?.participants.map((p) => p.subaccount.subaccountOwner) ?? [],
+    [leaderboard.data],
+  );
+  const usernames = useUsernames(participantAddresses);
 
   const availableRankTypes = useMemo(
     () => selectedContest?.tracks.map((t) => t.rankType) ?? [],
@@ -134,6 +140,12 @@ export function DiscoverPanel() {
             {leaderboard.data.participants.map((p) => {
               const track = p.tracks[effectiveRankType];
               const twitter = p.socialAccounts.find((a) => a.provider === "twitter");
+              const nadocoveUsername = usernames.data?.[p.subaccount.subaccountOwner.toLowerCase()];
+              const displayName = nadocoveUsername
+                ? `@${nadocoveUsername}`
+                : twitter
+                  ? `@${twitter.username}`
+                  : truncateAddress(p.subaccount.subaccountOwner);
               return (
                 <Link
                   key={p.subaccount.subaccountOwner + p.subaccount.subaccountName}
@@ -144,9 +156,7 @@ export function DiscoverPanel() {
                     <span className="w-6 text-foreground-muted">
                       #{track?.rank.toString() ?? "—"}
                     </span>
-                    <span className="font-mono text-foreground">
-                      {twitter ? `@${twitter.username}` : truncateAddress(p.subaccount.subaccountOwner)}
-                    </span>
+                    <span className="font-mono text-foreground">{displayName}</span>
                     {p.subaccount.subaccountName !== "default" && (
                       <span className="text-xs text-foreground-muted">
                         ({p.subaccount.subaccountName})
