@@ -42,7 +42,7 @@ function Sidebar() {
               href={tab.href}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
                 active
-                  ? "bg-surface-raised text-cove-indigo"
+                  ? "nav-item-active text-cove-indigo"
                   : "text-foreground-muted hover:bg-surface-raised hover:text-foreground"
               }`}
             >
