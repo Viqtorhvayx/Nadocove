@@ -1,59 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
 import { AppHeader } from "@/components/app-header";
 import { ConnectButton } from "@/components/connect-button";
 import { SubaccountProvider } from "@/lib/subaccount-context";
-
-const TABS = [
-  { href: "/dashboard", label: "Portfolio" },
-  { href: "/dashboard/deposit", label: "Deposit" },
-  { href: "/dashboard/withdraw", label: "Withdraw" },
-  { href: "/dashboard/trade", label: "Trade" },
-  { href: "/dashboard/history", label: "History" },
-  { href: "/dashboard/competitions", label: "Competitions" },
-  { href: "/discover", label: "Discover" },
-  { href: "/dashboard/watchlist", label: "Watchlist" },
-  { href: "/dashboard/settings", label: "Settings" },
-];
-
-function TabNav() {
-  const pathname = usePathname();
-
-  return (
-    <div className="relative border-b border-border">
-      <nav className="flex gap-1 overflow-x-auto">
-        {TABS.map((tab) => {
-          const active =
-            tab.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(tab.href);
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition ${
-                active
-                  ? "border-cove-indigo text-foreground"
-                  : "border-transparent text-foreground-muted hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </Link>
-          );
-        })}
-      </nav>
-      {/* Hints that the tab bar scrolls sideways — nine tabs don't fit a
-          phone width, and overflow-x-auto alone gives no visual cue. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden"
-      />
-    </div>
-  );
-}
 
 export default function DashboardLayout({
   children,
@@ -79,9 +29,6 @@ export default function DashboardLayout({
 
       {isConnected && (
         <SubaccountProvider>
-          <div className="mx-auto w-full max-w-6xl px-6">
-            <TabNav />
-          </div>
           <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-6 pb-16">
             {children}
           </main>
