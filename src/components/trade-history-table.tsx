@@ -1,5 +1,6 @@
 "use client";
 
+import { removeDecimals } from "@nadohq/shared";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
 import { TokenIcon } from "@/components/token-icon";
@@ -54,9 +55,15 @@ export function TradeHistoryTable({
             <tbody className="divide-y divide-border">
               {history.data.map((fill) => {
                 const isBuy = fill.baseFilled.gt(0);
+                // baseFilled/quoteFilled are raw 18-decimal fixed-point — a
+                // ratio of the two is scale-invariant, so price needs no
+                // conversion, but the standalone fields below do.
                 const price = fill.baseFilled.isZero()
                   ? fill.quoteFilled.abs()
                   : fill.quoteFilled.abs().div(fill.baseFilled.abs());
+                const size = removeDecimals(fill.baseFilled.abs(), 18);
+                const fee = removeDecimals(fill.totalFee, 18);
+                const realizedPnl = removeDecimals(fill.realizedPnl, 18);
                 const symbol = symbolMap[fill.productId];
                 return (
                   <tr key={fill.digest + fill.submissionIndex}>
@@ -84,16 +91,16 @@ export function TradeHistoryTable({
                       </span>
                     </td>
                     <td className="py-2 text-right text-foreground-muted">
-                      {formatAmount(fill.baseFilled.abs())}
+                      {formatAmount(size)}
                     </td>
                     <td className="py-2 text-right text-foreground-muted">
                       {formatUsd(price)}
                     </td>
                     <td className="py-2 text-right text-foreground-muted">
-                      {formatUsd(fill.totalFee)}
+                      {formatUsd(fee)}
                     </td>
-                    <td className={`py-2 text-right ${pnlColorClass(fill.realizedPnl)}`}>
-                      {formatSignedUsd(fill.realizedPnl)}
+                    <td className={`py-2 text-right ${pnlColorClass(realizedPnl)}`}>
+                      {formatSignedUsd(realizedPnl)}
                     </td>
                   </tr>
                 );

@@ -50,3 +50,24 @@ export function pnlColorClass(value: BigNumber): string {
 export function truncateAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
+
+const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ["year", 60 * 60 * 24 * 365],
+  ["month", 60 * 60 * 24 * 30],
+  ["day", 60 * 60 * 24],
+  ["hour", 60 * 60],
+  ["minute", 60],
+];
+const relativeFormatter = new Intl.RelativeTimeFormat("en", { style: "narrow" });
+
+/** Unix seconds -> "2m ago" / "3h ago" / "just now". */
+export function formatRelativeTime(unixSeconds: number): string {
+  const diffSeconds = Math.round(Date.now() / 1000 - unixSeconds);
+  if (diffSeconds < 30) return "just now";
+  for (const [unit, secondsInUnit] of RELATIVE_UNITS) {
+    if (diffSeconds >= secondsInUnit) {
+      return relativeFormatter.format(-Math.floor(diffSeconds / secondsInUnit), unit);
+    }
+  }
+  return relativeFormatter.format(-Math.floor(diffSeconds / 60), "minute");
+}

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { SignInButton } from "@/components/sign-in-button";
+import { NotificationBell } from "@/components/notification-bell";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 
 /**
@@ -115,6 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               Deposit
             </Link>
             <SignInButton />
+            <NotificationBell />
             <ConnectButton />
           </div>
         </div>
