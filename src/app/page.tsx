@@ -1,7 +1,7 @@
-import { LogoMark } from "@/components/logo";
-import { ConnectButton } from "@/components/connect-button";
+import Link from "next/link";
+import { Logo, LogoMark } from "@/components/logo";
 import { AddressLookup } from "@/components/address-lookup";
-import { AppHeader } from "@/components/app-header";
+import { HomeConnectFab } from "@/components/home-connect-fab";
 
 const FEATURES = [
   {
@@ -31,7 +31,13 @@ export default function Home() {
         }}
       />
 
-      <AppHeader showNadoDocs />
+      <header className="mx-auto flex w-full max-w-6xl items-center px-6 py-6">
+        <Link href="/">
+          <Logo size={26} />
+        </Link>
+      </header>
+
+      <HomeConnectFab />
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
         <section className="flex flex-col items-start gap-6 py-20 sm:py-28">
@@ -47,21 +53,24 @@ export default function Home() {
             wallet you already use, see your whole Nado footprint in one
             place, and trade straight from it.
           </p>
-          <div className="flex items-center gap-4">
-            <ConnectButton className="px-6 py-3 text-base" />
-            <a
-              href="#features"
-              className="text-sm font-medium text-foreground-muted transition hover:text-foreground"
-            >
-              See what&apos;s inside →
-            </a>
-          </div>
+          <a
+            href="#features"
+            className="text-sm font-medium text-foreground-muted transition hover:text-foreground"
+          >
+            See what&apos;s inside →
+          </a>
           <AddressLookup />
+          <Link
+            href="/discover"
+            className="text-sm text-foreground-muted transition hover:text-foreground"
+          >
+            Or browse real trader standings on Discover →
+          </Link>
         </section>
 
         <section
           id="features"
-          className="grid grid-cols-1 gap-6 border-t border-border py-16 sm:grid-cols-3"
+          className="grid grid-cols-1 gap-6 border-t border-border pb-24 pt-16 sm:grid-cols-3"
         >
           {FEATURES.map((feature) => (
             <div
@@ -90,7 +99,15 @@ export default function Home() {
           >
             Nado
           </a>
-          . It is not affiliated with or endorsed by the Nado team.
+          . It is not affiliated with or endorsed by the Nado team. ·{" "}
+          <a
+            href="https://docs.nado.xyz"
+            target="_blank"
+            rel="noreferrer"
+            className="underline decoration-border underline-offset-2 hover:text-foreground"
+          >
+            Nado Docs
+          </a>
         </p>
       </footer>
     </div>
