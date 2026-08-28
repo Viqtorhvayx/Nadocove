@@ -73,7 +73,11 @@ export function MarketChart({ productId, symbol }: { productId: number | undefin
     <Card title={symbol ?? "Market"} note="real candlesticks — Nado indexer">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
         {hovered ? (
-          <div className="flex flex-wrap gap-3 text-xs text-foreground-muted">
+          <div
+            className={`lcd-readout flex flex-wrap gap-3 rounded px-3 py-1.5 text-xs ${
+              hovered.close.lt(hovered.open) ? "lcd-negative" : ""
+            }`}
+          >
             <span>O {formatUsd(hovered.open)}</span>
             <span>H {formatUsd(hovered.high)}</span>
             <span>L {formatUsd(hovered.low)}</span>

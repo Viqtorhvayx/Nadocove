@@ -97,11 +97,9 @@ export function OrderBook({ productId }: { productId: number | undefined }) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between border-y border-border px-2 py-1.5 text-xs">
-        <span className="font-semibold text-foreground">
-          {bestAsk && bestBid ? formatUsd(bestBid.plus(bestAsk).div(2)) : "—"}
-        </span>
-        <span className="text-foreground-muted">
+      <div className="lcd-readout flex items-center justify-between px-3 py-2 text-sm font-semibold">
+        <span>{bestAsk && bestBid ? formatUsd(bestBid.plus(bestAsk).div(2)) : "—"}</span>
+        <span className="text-xs font-normal opacity-70">
           {spread ? `spread ${formatUsd(spread)}` : ""}
         </span>
       </div>
