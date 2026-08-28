@@ -68,7 +68,7 @@ export function AddressProfile({ address }: { address: string }) {
             onClick={() =>
               isWatched ? watchlist.remove(address) : watchlist.add(address)
             }
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:text-foreground"
+            className="btn-tactile-secondary rounded-full px-3 py-1.5 text-xs font-medium text-foreground-muted transition-colors hover:text-foreground"
           >
             {isWatched ? "★ On watchlist" : "☆ Add to watchlist"}
           </button>

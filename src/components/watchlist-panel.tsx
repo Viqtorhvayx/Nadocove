@@ -47,7 +47,7 @@ export function WatchlistPanel() {
         />
         <button
           type="submit"
-          className="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground-muted transition hover:text-foreground"
+          className="btn-tactile-secondary rounded-full px-4 py-2 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
         >
           Add
         </button>

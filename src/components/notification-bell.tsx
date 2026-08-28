@@ -30,7 +30,7 @@ export function NotificationBell() {
       href="/dashboard/watchlist"
       onClick={markSeen}
       aria-label={unreadCount > 0 ? `${unreadCount} new activity` : "Activity"}
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground-muted transition hover:text-foreground"
+      className="btn-tactile-secondary relative inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground-muted transition-colors hover:text-foreground"
     >
       <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
         <path
