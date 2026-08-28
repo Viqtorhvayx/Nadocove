@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { isAddress } from "viem";
-import { AppHeader } from "@/components/app-header";
+import { AppShell } from "@/components/app-shell";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
 import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
@@ -32,9 +32,8 @@ export function AddressProfile({ address }: { address: string }) {
 
   if (!isAddress(address)) {
     return (
-      <div className="flex flex-1 flex-col">
-        <AppHeader />
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-2 px-6 py-24 text-center">
+      <AppShell>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 py-24 text-center">
           <h1 className="text-2xl font-semibold text-foreground">
             Not a valid address
           </h1>
@@ -42,71 +41,67 @@ export function AddressProfile({ address }: { address: string }) {
             &quot;{address}&quot; doesn&apos;t look like an EVM address.
           </p>
         </div>
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <AppHeader />
-
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-24 sm:pb-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
-              Public profile · read-only
-            </span>
-            <h1 className="text-2xl font-semibold text-foreground">
-              <Identity address={address} />
-            </h1>
-            <p className="font-mono text-xs text-foreground-muted">
-              {truncateAddress(address)}
-            </p>
-            <FollowStats address={address} />
-            <ProfileBadges address={address} subaccountName={subaccountName} />
-          </div>
-          <div className="flex items-center gap-3">
-            <FollowButton address={address} />
-            <button
-              type="button"
-              onClick={() =>
-                isWatched ? watchlist.remove(address) : watchlist.add(address)
-              }
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:text-foreground"
-            >
-              {isWatched ? "★ On watchlist" : "☆ Add to watchlist"}
-            </button>
-            <SubaccountSelector
-              ownerAddress={address}
-              value={subaccountName}
-              onChange={setSubaccountName}
-            />
-          </div>
-        </div>
-
-        <PerformanceChart address={address} subaccountName={subaccountName} />
-
-        <PortfolioOverviewCard query={summary} />
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <BalancesTable query={summary} />
-          <PositionsTable query={summary} />
-        </div>
-
-        <FeeTierCard query={feeRates} />
-
-        <TradeHistoryTable owner={address} subaccountName={subaccountName} />
-
-        <PointsCard address={address} />
-
-        <Card title="Want a dashboard like this for your own account?" className="border-dashed">
-          <p className="text-sm text-foreground-muted">
-            Connect your wallet to see your own portfolio, trade, and make
-            your profile shareable too.
+    <AppShell>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+            Public profile · read-only
+          </span>
+          <h1 className="text-2xl font-semibold text-foreground">
+            <Identity address={address} />
+          </h1>
+          <p className="font-mono text-xs text-foreground-muted">
+            {truncateAddress(address)}
           </p>
-          <ConnectButton className="mt-4 px-6 py-2.5" />
-        </Card>
-      </main>
-    </div>
+          <FollowStats address={address} />
+          <ProfileBadges address={address} subaccountName={subaccountName} />
+        </div>
+        <div className="flex items-center gap-3">
+          <FollowButton address={address} />
+          <button
+            type="button"
+            onClick={() =>
+              isWatched ? watchlist.remove(address) : watchlist.add(address)
+            }
+            className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:text-foreground"
+          >
+            {isWatched ? "★ On watchlist" : "☆ Add to watchlist"}
+          </button>
+          <SubaccountSelector
+            ownerAddress={address}
+            value={subaccountName}
+            onChange={setSubaccountName}
+          />
+        </div>
+      </div>
+
+      <PerformanceChart address={address} subaccountName={subaccountName} />
+
+      <PortfolioOverviewCard query={summary} />
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <BalancesTable query={summary} />
+        <PositionsTable query={summary} />
+      </div>
+
+      <FeeTierCard query={feeRates} />
+
+      <TradeHistoryTable owner={address} subaccountName={subaccountName} />
+
+      <PointsCard address={address} />
+
+      <Card title="Want a dashboard like this for your own account?" className="border-dashed">
+        <p className="text-sm text-foreground-muted">
+          Connect your wallet to see your own portfolio, trade, and make
+          your profile shareable too.
+        </p>
+        <ConnectButton className="mt-4 px-6 py-2.5" />
+      </Card>
+    </AppShell>
   );
 }

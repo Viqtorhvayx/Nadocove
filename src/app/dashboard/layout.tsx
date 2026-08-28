@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { AppHeader } from "@/components/app-header";
+import { AppShell } from "@/components/app-shell";
 import { ConnectButton } from "@/components/connect-button";
 import { SubaccountProvider } from "@/lib/subaccount-context";
 
@@ -11,11 +11,9 @@ export default function DashboardLayout({
   const { isConnected } = useAccount();
 
   return (
-    <div className="flex flex-1 flex-col">
-      <AppHeader />
-
+    <AppShell>
       {!isConnected && (
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center">
           <h1 className="text-2xl font-semibold text-foreground">
             Connect your wallet to view your dashboard
           </h1>
@@ -29,11 +27,9 @@ export default function DashboardLayout({
 
       {isConnected && (
         <SubaccountProvider>
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-6 pb-24 sm:pb-16">
-            {children}
-          </main>
+          <div className="flex flex-1 flex-col gap-6">{children}</div>
         </SubaccountProvider>
       )}
-    </div>
+    </AppShell>
   );
 }
