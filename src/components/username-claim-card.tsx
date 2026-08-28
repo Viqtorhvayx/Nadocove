@@ -44,7 +44,7 @@ export function UsernameClaimCard() {
           <button
             type="submit"
             disabled={claim.isPending || value.length === 0}
-            className="rounded-full bg-cove-indigo px-4 py-2 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
+            className="btn-tactile-primary rounded-full px-4 py-2 text-sm font-semibold text-background disabled:opacity-50"
           >
             {claim.isPending ? "Claiming…" : "Claim"}
           </button>

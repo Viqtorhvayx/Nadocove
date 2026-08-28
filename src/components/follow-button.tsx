@@ -29,10 +29,10 @@ export function FollowButton({ address }: { address: string }) {
       onClick={() =>
         isFollowing.data ? unfollow.mutate(address) : follow.mutate(address)
       }
-      className={`rounded-full px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50 ${
+      className={`rounded-full px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${
         isFollowing.data
-          ? "border border-border text-foreground-muted hover:text-foreground"
-          : "bg-cove-indigo text-background hover:bg-cove-indigo-dim"
+          ? "btn-tactile-secondary text-foreground-muted transition-colors hover:text-foreground"
+          : "btn-tactile-primary text-background"
       }`}
     >
       {pending ? "…" : isFollowing.data ? "Following" : "Follow"}

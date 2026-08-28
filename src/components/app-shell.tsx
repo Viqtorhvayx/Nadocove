@@ -105,13 +105,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/withdraw"
-              className="hidden rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground-muted transition hover:text-foreground sm:inline-flex"
+              className="btn-tactile-secondary hidden rounded-full px-4 py-2 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground sm:inline-flex"
             >
               Withdraw
             </Link>
             <Link
               href="/dashboard/deposit"
-              className="hidden rounded-full bg-cove-indigo px-4 py-2 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim sm:inline-flex"
+              className="btn-tactile-primary hidden rounded-full px-4 py-2 text-sm font-semibold text-background sm:inline-flex"
             >
               Deposit
             </Link>

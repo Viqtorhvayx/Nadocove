@@ -103,3 +103,41 @@ textarea:focus-visible,
     transform: scale(1) translateY(0);
   }
 }
+
+/* Restrained tactile depth — richer shadows and a top highlight so
+   interactive elements feel pressable and physical, without literal
+   textures (no wood/leather/chrome). Filled buttons get a subtle
+   top-to-bottom gradient plus a glossy inset highlight along the top
+   edge, like light catching a slightly domed surface; pressing flattens
+   that highlight and tucks the shadow inward, like the surface actually
+   depressing. Kept deliberately restrained — a trading app should still
+   read as a serious financial tool, not an ornamental toy. */
+.btn-tactile-primary {
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-cove-indigo) 100%, white 12%), var(--color-cove-indigo-dim));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.15),
+    0 6px 14px -4px color-mix(in srgb, var(--color-cove-indigo) 55%, transparent);
+  transition: box-shadow 120ms ease, transform 80ms ease, filter 120ms ease;
+}
+.btn-tactile-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.btn-tactile-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.35),
+    0 2px 6px -3px color-mix(in srgb, var(--color-cove-indigo) 55%, transparent);
+}
+
+.btn-tactile-secondary {
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-surface-raised) 100%, white 4%), var(--color-surface-raised));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 2px 6px -3px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 120ms ease, transform 80ms ease;
+}
+.btn-tactile-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+}

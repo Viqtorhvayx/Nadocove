@@ -155,9 +155,9 @@ export function TradePanel({ symbols, selectedProductId, onProductIdChange }: Tr
               className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold capitalize transition ${
                 side === s
                   ? s === "buy"
-                    ? "border-positive bg-positive/10 text-positive"
-                    : "border-negative bg-negative/10 text-negative"
-                  : "border-border text-foreground-muted hover:text-foreground"
+                    ? "border-positive bg-positive/10 text-positive shadow-[inset_0_1px_0_0_rgba(52,211,153,0.3),0_0_12px_-4px_rgba(52,211,153,0.5)]"
+                    : "border-negative bg-negative/10 text-negative shadow-[inset_0_1px_0_0_rgba(248,113,113,0.3),0_0_12px_-4px_rgba(248,113,113,0.5)]"
+                  : "btn-tactile-secondary border-transparent text-foreground-muted hover:text-foreground"
               }`}
             >
               {s}
@@ -191,7 +191,7 @@ export function TradePanel({ symbols, selectedProductId, onProductIdChange }: Tr
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-full bg-cove-indigo px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
+          className="btn-tactile-primary rounded-full px-5 py-2.5 text-sm font-semibold text-background disabled:opacity-50"
         >
           Review {side === "buy" ? "buy" : "sell"} order
         </button>

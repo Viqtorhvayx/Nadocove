@@ -25,7 +25,7 @@ export function SignInButton({ className = "" }: { className?: string }) {
         type="button"
         onClick={() => signOut.mutate()}
         disabled={signOut.isPending}
-        className={`rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:text-foreground disabled:opacity-50 ${className}`}
+        className={`btn-tactile-secondary rounded-full px-3 py-1.5 text-xs font-medium text-foreground-muted transition-colors hover:text-foreground disabled:opacity-50 ${className}`}
       >
         {signOut.isPending ? "Signing out…" : "Sign out"}
       </button>
@@ -38,7 +38,7 @@ export function SignInButton({ className = "" }: { className?: string }) {
         type="button"
         onClick={() => signIn.mutate()}
         disabled={signIn.isPending}
-        className="rounded-full bg-cove-indigo px-3 py-1.5 text-xs font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
+        className="btn-tactile-primary rounded-full px-3 py-1.5 text-xs font-semibold text-background disabled:opacity-50"
       >
         {signIn.isPending ? "Sign in…" : "Sign in with Ethereum"}
       </button>

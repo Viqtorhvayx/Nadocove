@@ -55,7 +55,7 @@ export function PortfolioOverviewCard({
         </p>
         <Link
           href="/dashboard/deposit"
-          className="mt-4 inline-block rounded-full bg-cove-indigo px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim"
+          className="btn-tactile-primary mt-4 inline-block rounded-full px-5 py-2.5 text-sm font-semibold text-background"
         >
           Make your first deposit
         </Link>

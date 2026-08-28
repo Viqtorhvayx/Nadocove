@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 
 const FAB_CLASS =
-  "fixed bottom-8 right-6 z-40 rounded-full bg-cove-indigo px-5 py-3 text-sm font-semibold text-background shadow-lg shadow-cove-indigo/30 transition hover:bg-cove-indigo-dim sm:right-8";
+  "btn-tactile-primary fixed bottom-8 right-6 z-40 rounded-full px-5 py-3 text-sm font-semibold text-background sm:right-8";
 
 /**
  * The landing page's one persistent action — anchored to the side instead

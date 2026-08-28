@@ -123,7 +123,7 @@ export function DepositPanel() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-full bg-cove-indigo px-5 py-2.5 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim disabled:opacity-50"
+          className="btn-tactile-primary rounded-full px-5 py-2.5 text-sm font-semibold text-background disabled:opacity-50"
         >
           Review deposit
         </button>
