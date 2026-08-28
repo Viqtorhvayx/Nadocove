@@ -7,7 +7,7 @@ export default function DiscoverPage() {
     <div className="flex flex-1 flex-col">
       <AppHeader />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-16">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-24 sm:pb-16">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold text-foreground">Discover</h1>
           <p className="max-w-xl text-sm text-foreground-muted">

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { SignInButton } from "@/components/sign-in-button";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 
 /**
  * Flat, single-level tab set — modeled on how trading apps like
@@ -37,56 +38,59 @@ export function AppHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="mx-auto w-full max-w-6xl px-6 py-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/">
-          <Logo size={24} />
-        </Link>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/withdraw"
-            className="hidden rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground-muted transition hover:text-foreground sm:inline-flex"
-          >
-            Withdraw
+    <>
+      <header className="mx-auto w-full max-w-6xl px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link href="/">
+            <Logo size={24} />
           </Link>
-          <Link
-            href="/dashboard/deposit"
-            className="hidden rounded-full bg-cove-indigo px-4 py-2 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim sm:inline-flex"
-          >
-            Deposit
-          </Link>
-          <SignInButton />
-          <ConnectButton />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/withdraw"
+              className="hidden rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground-muted transition hover:text-foreground sm:inline-flex"
+            >
+              Withdraw
+            </Link>
+            <Link
+              href="/dashboard/deposit"
+              className="hidden rounded-full bg-cove-indigo px-4 py-2 text-sm font-semibold text-background transition hover:bg-cove-indigo-dim sm:inline-flex"
+            >
+              Deposit
+            </Link>
+            <SignInButton />
+            <ConnectButton />
+          </div>
         </div>
-      </div>
 
-      <div className="relative mt-3 border-b border-border">
-        <nav className="flex gap-1 overflow-x-auto">
-          {TABS.map((tab) => {
-            const active =
-              tab.href === "/dashboard"
-                ? pathname === "/dashboard"
-                : pathname.startsWith(tab.href);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition ${
-                  active
-                    ? "border-cove-indigo text-foreground"
-                    : "border-transparent text-foreground-muted hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden"
-        />
-      </div>
-    </header>
+        <div className="relative mt-3 border-b border-border">
+          <nav className="flex gap-1 overflow-x-auto">
+            {TABS.map((tab) => {
+              const active =
+                tab.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : pathname.startsWith(tab.href);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition ${
+                    active
+                      ? "border-cove-indigo text-foreground"
+                      : "border-transparent text-foreground-muted hover:text-foreground"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden"
+          />
+        </div>
+      </header>
+      <MobileBottomNav />
+    </>
   );
 }

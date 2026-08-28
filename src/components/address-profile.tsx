@@ -50,7 +50,7 @@ export function AddressProfile({ address }: { address: string }) {
     <div className="flex flex-1 flex-col">
       <AppHeader />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-16">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-24 sm:pb-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
