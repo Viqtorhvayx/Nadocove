@@ -13,6 +13,7 @@
   --color-cove-indigo: #4c6ef5;
   --color-cove-indigo-dim: #3b5bdb;
   --color-cove-amber: #f5b942;
+  --color-cove-coral: #ff8c7a;
 
   /* Semantic (PnL, risk) */
   --color-positive: #34d399;
@@ -29,6 +30,7 @@
   --color-cove-indigo: var(--color-cove-indigo);
   --color-cove-indigo-dim: var(--color-cove-indigo-dim);
   --color-cove-amber: var(--color-cove-amber);
+  --color-cove-coral: var(--color-cove-coral);
   --color-positive: var(--color-positive);
   --color-negative: var(--color-negative);
   --font-sans: var(--font-geist-sans);
@@ -145,16 +147,18 @@ textarea:focus-visible,
 /* Selected sidebar item — same tactile language as the buttons above
    (gradient fill, top highlight, soft glow), sized for a nav row rather
    than a pill button: a lit, slightly recessed tab instead of a raised
-   button, since it's a persistent "you are here" state, not a click. */
+   button, since it's a persistent "you are here" state, not a click.
+   Uses the coral accent rather than the brand indigo, to read as a
+   distinct "current location" marker instead of just another indigo
+   button among the many already on screen. */
 .nav-item-active {
   background-image: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-cove-indigo) 20%, var(--surface-raised)),
-    color-mix(in srgb, var(--color-cove-indigo) 10%, var(--surface-raised))
+    color-mix(in srgb, var(--color-cove-coral) 20%, var(--surface-raised)),
+    color-mix(in srgb, var(--color-cove-coral) 10%, var(--surface-raised))
   );
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 0 1px color-mix(in srgb, var(--color-cove-indigo) 40%, transparent),
     inset 0 -1px 2px 0 rgba(0, 0, 0, 0.25),
-    0 0 16px -6px color-mix(in srgb, var(--color-cove-indigo) 65%, transparent);
+    0 0 16px -6px color-mix(in srgb, var(--color-cove-coral) 65%, transparent);
 }
