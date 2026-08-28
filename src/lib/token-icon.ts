@@ -1,8 +1,16 @@
-/** Base tickers we have a real logo for, in public/tokens/{ticker}.svg. */
+/**
+ * Base tickers we have a real logo for, in public/tokens/{ticker}.svg —
+ * curated against Nado's actual live market list (pulled from a real
+ * getSymbols() response), not a generic top-N crypto list. Nado also
+ * lists tokenized stocks, FX pairs, and commodities (AAPL-PERP,
+ * EURUSD-PERP, XAG-PERP, ...) and a long tail of newer/smaller tokens no
+ * icon set covers yet — those fall back to the initials badge below
+ * rather than showing a wrong or unrelated logo.
+ */
 export const AVAILABLE_TOKEN_ICONS = new Set([
-  "btc", "eth", "sol", "xrp", "usdc", "usdt", "bnb", "doge", "ada", "avax",
-  "dot", "link", "ltc", "matic", "trx", "atom", "uni", "aave", "mkr", "comp",
-  "grt", "snx", "crv", "algo",
+  "btc", "eth", "sol", "xrp", "usdc", "bnb", "doge", "ada", "avax", "link",
+  "ltc", "uni", "aave", "arb", "sui", "jup", "near", "bch", "xmr", "zec",
+  "axs", "tao", "pepe", "lit",
 ]);
 
 /** Wrapped/synthetic variants that should visually use their underlying asset's logo. */
@@ -10,6 +18,8 @@ const ALIASES: Record<string, string> = {
   weth: "eth",
   wbtc: "btc",
   kbtc: "btc",
+  kbonk: "bonk",
+  kpepe: "pepe",
 };
 
 /**
