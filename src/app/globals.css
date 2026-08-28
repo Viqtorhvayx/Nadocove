@@ -104,95 +104,40 @@ textarea:focus-visible,
   }
 }
 
-/* Full skeuomorphism — a brushed-metal trading console: physical panels
-   with screwed corners, glossy glass/chrome buttons with a real specular
-   highlight, and LCD-style digital readouts for prices, like an actual
-   trading terminal's instrument panel. Chosen deliberately over generic
-   skeuomorphic materials (leather/wood, which belong to notebook/calendar
-   apps) because brushed metal and a lit digital display are the materials
-   a real trading console is made of. */
-
+/* Restrained tactile depth — richer shadows and a top highlight so
+   interactive elements feel pressable and physical, without literal
+   textures (no wood/leather/chrome). Filled buttons get a subtle
+   top-to-bottom gradient plus a glossy inset highlight along the top
+   edge, like light catching a slightly domed surface; pressing flattens
+   that highlight and tucks the shadow inward, like the surface actually
+   depressing. Kept deliberately restrained — a trading app should still
+   read as a serious financial tool, not an ornamental toy. */
 .btn-tactile-primary {
-  background-image:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-cove-indigo) 100%, white 22%) 0%, var(--color-cove-indigo) 55%, var(--color-cove-indigo-dim) 100%);
-  border: 1px solid color-mix(in srgb, var(--color-cove-indigo) 60%, black 20%);
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-cove-indigo) 100%, white 12%), var(--color-cove-indigo-dim));
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.25),
-    0 1px 0 0 rgba(0, 0, 0, 0.4),
-    0 8px 16px -4px color-mix(in srgb, var(--color-cove-indigo) 65%, transparent);
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.15),
+    0 6px 14px -4px color-mix(in srgb, var(--color-cove-indigo) 55%, transparent);
   transition: box-shadow 120ms ease, transform 80ms ease, filter 120ms ease;
 }
 .btn-tactile-primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  filter: brightness(1.05);
 }
 .btn-tactile-primary:active:not(:disabled) {
-  transform: translateY(2px);
+  transform: translateY(1px);
   box-shadow:
-    inset 0 3px 6px 0 rgba(0, 0, 0, 0.45),
-    0 1px 4px -2px color-mix(in srgb, var(--color-cove-indigo) 55%, transparent);
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.35),
+    0 2px 6px -3px color-mix(in srgb, var(--color-cove-indigo) 55%, transparent);
 }
 
 .btn-tactile-secondary {
-  background-image:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-surface-raised) 100%, white 10%) 0%, var(--color-surface-raised) 55%, color-mix(in srgb, var(--color-surface-raised) 100%, black 18%) 100%);
-  border: 1px solid color-mix(in srgb, var(--border) 100%, white 6%);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.3),
-    0 4px 10px -4px rgba(0, 0, 0, 0.6);
-  transition: box-shadow 120ms ease, transform 80ms ease, filter 120ms ease;
-}
-.btn-tactile-secondary:hover:not(:disabled) {
-  filter: brightness(1.06);
-}
-.btn-tactile-secondary:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: inset 0 3px 5px 0 rgba(0, 0, 0, 0.5);
-}
-
-/* Brushed-metal panel with screwed corners — replaces the flat card
-   surface everywhere via the shared Card component. Screws are 4
-   radial-gradient layers (one per corner), the fine streaks are a
-   repeating-linear-gradient — all CSS, no image assets. */
-.panel-skeuo {
-  background-color: var(--surface);
-  background-image:
-    radial-gradient(circle at 16px 16px, #050709 0 1.6px, #4a5262 1.6px 2.6px, #0d1017 2.6px 3.6px, transparent 3.6px),
-    radial-gradient(circle at calc(100% - 16px) 16px, #050709 0 1.6px, #4a5262 1.6px 2.6px, #0d1017 2.6px 3.6px, transparent 3.6px),
-    radial-gradient(circle at 16px calc(100% - 16px), #050709 0 1.6px, #4a5262 1.6px 2.6px, #0d1017 2.6px 3.6px, transparent 3.6px),
-    radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), #050709 0 1.6px, #4a5262 1.6px 2.6px, #0d1017 2.6px 3.6px, transparent 3.6px),
-    repeating-linear-gradient(95deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px),
-    linear-gradient(155deg, rgba(255, 255, 255, 0.04), transparent 35%);
-  border: 1px solid color-mix(in srgb, var(--border) 100%, white 5%);
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-surface-raised) 100%, white 4%), var(--color-surface-raised));
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
-    0 18px 36px -20px rgba(0, 0, 0, 0.8);
+    0 2px 6px -3px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 120ms ease, transform 80ms ease;
 }
-
-/* LCD/LED-style digital readout, for the prices that matter most — a
-   dark recessed "screen" with a glowing monospace digit, like a real
-   trading terminal's ticker display. */
-.lcd-readout {
-  font-family: var(--font-mono, monospace);
-  background-color: #04120c;
-  color: #34d399;
-  text-shadow: 0 0 6px rgba(52, 211, 153, 0.75), 0 0 1px rgba(52, 211, 153, 0.9);
-  border: 1px solid #0a2019;
-  border-radius: 4px;
-  box-shadow:
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.8),
-    inset 0 0 10px 0 rgba(52, 211, 153, 0.08);
-  letter-spacing: 0.02em;
-}
-.lcd-readout.lcd-negative {
-  color: #f87171;
-  text-shadow: 0 0 6px rgba(248, 113, 113, 0.75), 0 0 1px rgba(248, 113, 113, 0.9);
-  box-shadow:
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.8),
-    inset 0 0 10px 0 rgba(248, 113, 113, 0.08);
+.btn-tactile-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
 }
