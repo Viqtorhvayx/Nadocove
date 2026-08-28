@@ -5,6 +5,7 @@ import BigNumber from "bignumber.js";
 import { removeDecimals, type OrderExecutionType } from "@nadohq/shared";
 import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
+import { TokenIcon } from "@/components/token-icon";
 import { formatUsd } from "@/lib/format";
 import {
   useCancelOrder,
@@ -110,18 +111,29 @@ export function TradePanel() {
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1 text-xs text-foreground-muted">
             Market
-            <select
-              value={selectedProductId ?? ""}
-              onChange={(e) => setProductId(Number(e.target.value))}
-              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-            >
-              {symbols.length === 0 && <option value="">Loading…</option>}
-              {symbols.map((s) => (
-                <option key={s.productId} value={s.productId}>
-                  {s.symbol}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              {selectedSymbol && (
+                <TokenIcon
+                  symbol={selectedSymbol}
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+                />
+              )}
+              <select
+                value={selectedProductId ?? ""}
+                onChange={(e) => setProductId(Number(e.target.value))}
+                className={`w-full rounded-lg border border-border bg-surface-raised py-2 pr-3 text-sm text-foreground ${
+                  selectedSymbol ? "pl-9" : "pl-3"
+                }`}
+              >
+                {symbols.length === 0 && <option value="">Loading…</option>}
+                {symbols.map((s) => (
+                  <option key={s.productId} value={s.productId}>
+                    {s.symbol}
+                  </option>
+                ))}
+              </select>
+            </div>
           </label>
 
           <label className="flex flex-col gap-1 text-xs text-foreground-muted">

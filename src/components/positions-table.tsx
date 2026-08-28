@@ -9,6 +9,7 @@ import {
 } from "@nadohq/shared";
 import type { GetEngineSubaccountSummaryResponse } from "@nadohq/engine-client";
 import { Card } from "@/components/card";
+import { TokenIcon } from "@/components/token-icon";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 
@@ -34,14 +35,16 @@ export function PositionsTable({
         {positions.map((position) => {
           const side = position.amount.gt(0) ? "long" : "short";
           const pnl = calcPerpBalanceValue(position);
+          const symbol = symbolMap[position.productId];
           return (
             <div
               key={position.productId}
               className="flex items-center justify-between py-2.5 text-sm first:pt-0 last:pb-0"
             >
               <span className="flex items-center gap-2">
+                {symbol && <TokenIcon symbol={symbol} size={18} />}
                 <span className="font-medium text-foreground">
-                  {symbolMap[position.productId] ?? `#${position.productId}`}
+                  {symbol ?? `#${position.productId}`}
                 </span>
                 <span
                   className={`rounded px-1.5 py-0.5 text-xs font-semibold uppercase ${

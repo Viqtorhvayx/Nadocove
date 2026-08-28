@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
+import { TokenIcon } from "@/components/token-icon";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 import { useMatchHistory } from "@/lib/use-match-history";
@@ -56,13 +57,17 @@ export function TradeHistoryTable({
                 const price = fill.baseFilled.isZero()
                   ? fill.quoteFilled.abs()
                   : fill.quoteFilled.abs().div(fill.baseFilled.abs());
+                const symbol = symbolMap[fill.productId];
                 return (
                   <tr key={fill.digest + fill.submissionIndex}>
                     <td className="py-2 text-foreground-muted">
                       {new Date(fill.timestamp.toNumber() * 1000).toLocaleString()}
                     </td>
                     <td className="py-2 text-foreground">
-                      {symbolMap[fill.productId] ?? `#${fill.productId}`}
+                      <span className="flex items-center gap-2">
+                        {symbol && <TokenIcon symbol={symbol} size={16} />}
+                        {symbol ?? `#${fill.productId}`}
+                      </span>
                     </td>
                     <td className="py-2">
                       <span

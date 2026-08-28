@@ -4,6 +4,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import type { GetEngineSubaccountFeeRatesResponse } from "@nadohq/engine-client";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
+import { TokenIcon } from "@/components/token-icon";
 import { formatPercent } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 
@@ -63,19 +64,25 @@ export function FeeTierCard({
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {rows.map(([productId, rate]) => (
-                <tr key={productId}>
-                  <td className="py-2 text-foreground">
-                    {symbolMap[Number(productId)] ?? `#${productId}`}
-                  </td>
-                  <td className="py-2 text-right text-foreground-muted">
-                    {formatPercent(rate.maker, 3)}
-                  </td>
-                  <td className="py-2 text-right text-foreground-muted">
-                    {formatPercent(rate.taker, 3)}
-                  </td>
-                </tr>
-              ))}
+              {rows.map(([productId, rate]) => {
+                const symbol = symbolMap[Number(productId)];
+                return (
+                  <tr key={productId}>
+                    <td className="py-2 text-foreground">
+                      <span className="flex items-center gap-2">
+                        {symbol && <TokenIcon symbol={symbol} size={16} />}
+                        {symbol ?? `#${productId}`}
+                      </span>
+                    </td>
+                    <td className="py-2 text-right text-foreground-muted">
+                      {formatPercent(rate.maker, 3)}
+                    </td>
+                    <td className="py-2 text-right text-foreground-muted">
+                      {formatPercent(rate.taker, 3)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
