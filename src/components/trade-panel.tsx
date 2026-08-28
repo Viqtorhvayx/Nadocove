@@ -1,18 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import BigNumber from "bignumber.js";
 import { removeDecimals, type OrderExecutionType } from "@nadohq/shared";
+import type { EngineSymbol } from "@nadohq/engine-client";
 import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { TokenIcon } from "@/components/token-icon";
 import { formatUsd } from "@/lib/format";
-import {
-  useCancelOrder,
-  useOpenOrders,
-  usePlaceOrder,
-  useSymbols,
-} from "@/lib/use-subaccount-data";
+import { useCancelOrder, useOpenOrders, usePlaceOrder } from "@/lib/use-subaccount-data";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
 
 function OpenOrders({ productId }: { productId: number | undefined }) {
@@ -60,16 +56,15 @@ function OpenOrders({ productId }: { productId: number | undefined }) {
   );
 }
 
-export function TradePanel() {
-  const symbolsQuery = useSymbols();
+type TradePanelProps = {
+  symbols: EngineSymbol[];
+  selectedProductId: number | undefined;
+  onProductIdChange: (productId: number) => void;
+};
+
+export function TradePanel({ symbols, selectedProductId, onProductIdChange }: TradePanelProps) {
   const placeOrder = usePlaceOrder();
 
-  const symbols = useMemo(() => {
-    const entries = Object.values(symbolsQuery.data?.symbols ?? {});
-    return entries.sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }, [symbolsQuery.data]);
-
-  const [productId, setProductId] = useState<number | undefined>(undefined);
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [executionType, setExecutionType] =
     useState<OrderExecutionType>("default");
@@ -77,7 +72,6 @@ export function TradePanel() {
   const [price, setPrice] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const selectedProductId = productId ?? symbols[0]?.productId;
   const selectedSymbol = symbols.find((s) => s.productId === selectedProductId)?.symbol;
 
   const canSubmit =
@@ -121,7 +115,7 @@ export function TradePanel() {
               )}
               <select
                 value={selectedProductId ?? ""}
-                onChange={(e) => setProductId(Number(e.target.value))}
+                onChange={(e) => onProductIdChange(Number(e.target.value))}
                 className={`w-full rounded-lg border border-border bg-surface-raised py-2 pr-3 text-sm text-foreground ${
                   selectedSymbol ? "pl-9" : "pl-3"
                 }`}
