@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAccount } from "wagmi";
-import { Logo } from "@/components/logo";
+import { AppHeader } from "@/components/app-header";
 import { ConnectButton } from "@/components/connect-button";
 import { SubaccountProvider } from "@/lib/subaccount-context";
 
@@ -61,16 +61,11 @@ export default function DashboardLayout({
   const { isConnected } = useAccount();
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
-      <header className="flex items-center justify-between py-6">
-        <Link href="/">
-          <Logo size={24} />
-        </Link>
-        <ConnectButton />
-      </header>
+    <div className="flex flex-1 flex-col">
+      <AppHeader />
 
       {!isConnected && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
           <h1 className="text-2xl font-semibold text-foreground">
             Connect your wallet to view your dashboard
           </h1>
@@ -84,8 +79,10 @@ export default function DashboardLayout({
 
       {isConnected && (
         <SubaccountProvider>
-          <TabNav />
-          <main className="flex flex-1 flex-col gap-6 py-6 pb-16">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <TabNav />
+          </div>
+          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-6 pb-16">
             {children}
           </main>
         </SubaccountProvider>

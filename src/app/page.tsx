@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { Logo, LogoMark } from "@/components/logo";
+import { LogoMark } from "@/components/logo";
 import { ConnectButton } from "@/components/connect-button";
 import { AddressLookup } from "@/components/address-lookup";
+import { AppHeader } from "@/components/app-header";
 
 const FEATURES = [
   {
@@ -31,34 +31,7 @@ export default function Home() {
         }}
       />
 
-      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-6">
-        <Link href="/">
-          <Logo size={26} />
-        </Link>
-        <nav className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/discover"
-            className="text-sm text-foreground-muted transition hover:text-foreground"
-          >
-            Discover
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm text-foreground-muted transition hover:text-foreground"
-          >
-            Dashboard
-          </Link>
-          <a
-            href="https://docs.nado.xyz"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden text-sm text-foreground-muted transition hover:text-foreground sm:inline"
-          >
-            Nado Docs
-          </a>
-          <ConnectButton />
-        </nav>
-      </header>
+      <AppHeader showNadoDocs />
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
         <section className="flex flex-col items-start gap-6 py-20 sm:py-28">

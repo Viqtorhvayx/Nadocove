@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { isAddress } from "viem";
-import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { AppHeader } from "@/components/app-header";
 import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/card";
 import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
@@ -33,14 +32,9 @@ export function AddressProfile({ address }: { address: string }) {
 
   if (!isAddress(address)) {
     return (
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
-        <header className="flex items-center justify-between py-6">
-          <Link href="/">
-            <Logo size={24} />
-          </Link>
-          <ConnectButton />
-        </header>
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 py-24 text-center">
+      <div className="flex flex-1 flex-col">
+        <AppHeader />
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-2 px-6 py-24 text-center">
           <h1 className="text-2xl font-semibold text-foreground">
             Not a valid address
           </h1>
@@ -53,15 +47,10 @@ export function AddressProfile({ address }: { address: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
-      <header className="flex items-center justify-between py-6">
-        <Link href="/">
-          <Logo size={24} />
-        </Link>
-        <ConnectButton />
-      </header>
+    <div className="flex flex-1 flex-col">
+      <AppHeader />
 
-      <main className="flex flex-1 flex-col gap-6 pb-16">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
