@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { IndexerLeaderboardRankType } from "@nadohq/indexer-client";
+import type { IndexerLeaderboardContest, IndexerLeaderboardRankType } from "@nadohq/indexer-client";
 import { Card } from "@/components/card";
 import { LeaderboardList } from "@/components/leaderboard-list";
 import { Skeleton } from "@/components/skeleton";
+import { formatRelativeTime } from "@/lib/format";
 import { useAllContests, useContestLeaderboard } from "@/lib/use-competitions";
 
 const RANK_TYPE_LABEL: Record<IndexerLeaderboardRankType, string> = {
@@ -14,6 +15,23 @@ const RANK_TYPE_LABEL: Record<IndexerLeaderboardRankType, string> = {
   balance: "Highest balance",
   liquidation: "Most liquidations",
 };
+
+function ContestStatusBadge({ contest }: { contest: IndexerLeaderboardContest }) {
+  if (contest.active) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-positive/10 px-2.5 py-1 text-xs font-medium text-positive">
+        <span className="h-1.5 w-1.5 rounded-full bg-positive" />
+        Live
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-surface-raised px-2.5 py-1 text-xs font-medium text-foreground-muted">
+      <span className="h-1.5 w-1.5 rounded-full bg-foreground-muted" />
+      Ended {formatRelativeTime(contest.endTime.toNumber())}
+    </span>
+  );
+}
 
 export function DiscoverPanel() {
   const contests = useAllContests();
@@ -72,10 +90,7 @@ export function DiscoverPanel() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card
-        title="Top traders"
-        note={selectedContest ? (selectedContest.active ? "live" : "final standings") : undefined}
-      >
+      <Card title="Top traders">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <select
             value={effectiveContestId ?? ""}
@@ -92,6 +107,8 @@ export function DiscoverPanel() {
               </option>
             ))}
           </select>
+
+          {selectedContest && <ContestStatusBadge contest={selectedContest} />}
 
           <div className="flex gap-1">
             {availableRankTypes.map((rt) => (
