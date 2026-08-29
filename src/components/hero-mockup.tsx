@@ -1,10 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
+import BigNumber from "bignumber.js";
 import { TokenIcon } from "@/components/token-icon";
 import { formatUsd, formatPercent } from "@/lib/format";
 import { useMarketTicker } from "@/lib/use-market-ticker";
-
-const SPARKLINE_POINTS = "0,38 20,32 40,35 60,22 80,26 100,14 120,18 140,8 160,12 180,2";
+import { useSymbols } from "@/lib/use-subaccount-data";
+import { useCandlesticks } from "@/lib/use-candlesticks";
 
 const DEPTH_ROWS = [
   { side: "ask" as const, width: 62 },
@@ -15,6 +17,149 @@ const DEPTH_ROWS = [
   { side: "bid" as const, width: 48 },
 ];
 
+const CHART_W = 300;
+const CHART_H = 108;
+const CHART_PAD = 10;
+
+/**
+ * A glowing trend line built from real hourly AAPL-PERP closes — segments
+ * color by direction (up/down), with a blurred "halo" stroke under a crisp
+ * one for the neon look, entry/live dots, a dotted mean line, and a couple
+ * of restrained corner accents. No screenshot, no invented numbers: every
+ * value on this chart is a real candle close from Nado's indexer.
+ */
+function NeonTrendChart({ productId }: { productId: number | undefined }) {
+  const candles = useCandlesticks(productId, 3600, 18);
+
+  const points = useMemo(() => {
+    const data = [...(candles.data ?? [])].sort((a, b) => a.time.minus(b.time).toNumber());
+    if (data.length < 2) return null;
+    const closes = data.map((c) => c.close.toNumber());
+    const lo = Math.min(...closes);
+    const hi = Math.max(...closes);
+    const range = hi - lo || 1;
+    const stepX = (CHART_W - CHART_PAD * 2) / (closes.length - 1);
+    const avg = closes.reduce((a, b) => a + b, 0) / closes.length;
+    return {
+      raw: closes,
+      avgY: CHART_H - CHART_PAD - ((avg - lo) / range) * (CHART_H - CHART_PAD * 2),
+      pts: closes.map((c, i) => ({
+        x: CHART_PAD + i * stepX,
+        y: CHART_H - CHART_PAD - ((c - lo) / range) * (CHART_H - CHART_PAD * 2),
+        value: c,
+      })),
+    };
+  }, [candles.data]);
+
+  if (!points) {
+    return <div className="mt-3 h-28 w-full animate-pulse rounded-lg bg-surface-raised" />;
+  }
+
+  const { pts, avgY, raw } = points;
+  const first = pts[0];
+  const last = pts[pts.length - 1];
+  const overallUp = last.value >= first.value;
+  const changePct = first.value > 0 ? ((last.value - first.value) / first.value) * 100 : 0;
+
+  return (
+    <div className="relative mt-3 h-28 w-full">
+      <svg
+        viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+        className="h-full w-full"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <filter id="hero-chart-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="4.5" />
+          </filter>
+        </defs>
+
+        {/* corner accents */}
+        <g opacity="0.35">
+          {[0, 1, 2].map((r) =>
+            [0, 1, 2].map((c) => (
+              <circle key={`${r}-${c}`} cx={6 + c * 6} cy={6 + r * 6} r="1" fill="var(--foreground-muted)" />
+            )),
+          )}
+        </g>
+        <polyline
+          points={`${CHART_W - 4},${CHART_H - 22} ${CHART_W - 4},${CHART_H - 4} ${CHART_W - 22},${CHART_H - 4}`}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="1"
+          opacity="0.6"
+        />
+
+        {/* dotted mean line */}
+        <line
+          x1={CHART_PAD}
+          y1={avgY}
+          x2={CHART_W - CHART_PAD}
+          y2={avgY}
+          stroke="var(--foreground-muted)"
+          strokeWidth="1"
+          strokeDasharray="1.5 3.5"
+          opacity="0.35"
+        />
+
+        {/* glow halo, then crisp line, per up/down segment */}
+        {pts.slice(1).map((p, i) => {
+          const prev = pts[i];
+          const color = p.value >= prev.value ? "var(--color-positive)" : "var(--color-negative)";
+          return (
+            <line
+              key={`halo-${i}`}
+              x1={prev.x}
+              y1={prev.y}
+              x2={p.x}
+              y2={p.y}
+              stroke={color}
+              strokeWidth="9"
+              strokeLinecap="round"
+              opacity="0.6"
+              filter="url(#hero-chart-glow)"
+            />
+          );
+        })}
+        {pts.slice(1).map((p, i) => {
+          const prev = pts[i];
+          const color = p.value >= prev.value ? "var(--color-positive)" : "var(--color-negative)";
+          return (
+            <line key={`line-${i}`} x1={prev.x} y1={prev.y} x2={p.x} y2={p.y} stroke={color} strokeWidth="2" strokeLinecap="round" />
+          );
+        })}
+
+        <circle cx={first.x} cy={first.y} r="5" fill="var(--color-positive)" opacity="0.65" filter="url(#hero-chart-glow)" />
+        <circle cx={first.x} cy={first.y} r="2.5" fill="var(--color-positive)" />
+        <circle
+          cx={last.x}
+          cy={last.y}
+          r="6.5"
+          fill="var(--color-cove-indigo)"
+          opacity="0.7"
+          filter="url(#hero-chart-glow)"
+          className="animate-pulse"
+        />
+        <circle cx={last.x} cy={last.y} r="3" fill="var(--color-cove-indigo)" />
+      </svg>
+
+      <span
+        className="absolute text-[9px] font-medium uppercase tracking-wide text-positive"
+        style={{ left: `${(first.x / CHART_W) * 100}%`, top: `${(first.y / CHART_H) * 100}%`, transform: "translate(-2px, 8px)" }}
+      >
+        Entry {formatUsd(new BigNumber(raw[0]))}
+      </span>
+      <span
+        className="absolute whitespace-nowrap text-[9px] font-medium uppercase tracking-wide text-cove-indigo"
+        style={{ left: `${(last.x / CHART_W) * 100}%`, top: `${(last.y / CHART_H) * 100}%`, transform: "translate(-100%, -18px)" }}
+      >
+        Live {formatUsd(new BigNumber(raw[raw.length - 1]))} {overallUp ? "+" : ""}
+        {changePct.toFixed(1)}%
+      </span>
+    </div>
+  );
+}
+
 /**
  * A stylized preview of the Trade page — not a screenshot, built from the
  * same visual language (card, order-book bars, tactile buttons) as the real
@@ -24,8 +169,12 @@ const DEPTH_ROWS = [
  */
 export function HeroMockup() {
   const ticker = useMarketTicker();
+  const symbolsQuery = useSymbols();
   const aapl = ticker.data?.find((e) => e.symbol === "AAPL-PERP");
   const up = aapl ? aapl.changePct.gte(0) : true;
+  const aaplProductId = Object.values(symbolsQuery.data?.symbols ?? {}).find(
+    (s) => s.symbol === "AAPL-PERP",
+  )?.productId;
 
   return (
     <div className="relative mx-auto w-full max-w-sm" style={{ perspective: "1200px" }}>
@@ -59,16 +208,7 @@ export function HeroMockup() {
           </span>
         </div>
 
-        <svg viewBox="0 0 180 44" className="mt-3 h-11 w-full" preserveAspectRatio="none">
-          <polyline
-            points={SPARKLINE_POINTS}
-            fill="none"
-            stroke="var(--color-positive)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <NeonTrendChart productId={aaplProductId} />
 
         <div className="mt-4 flex flex-col gap-1">
           {DEPTH_ROWS.map((row, i) => (

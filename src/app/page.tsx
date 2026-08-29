@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo, LogoMark } from "@/components/logo";
+import { Logo } from "@/components/logo";
 import { AddressLookup } from "@/components/address-lookup";
 import { HomeConnectFab } from "@/components/home-connect-fab";
 import { WalletCta } from "@/components/wallet-cta";
@@ -58,10 +58,6 @@ export default function Home() {
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6">
         <section className="grid grid-cols-1 items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
           <div className="cove-fade-in flex flex-col items-start gap-6">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-foreground-muted">
-              <LogoMark size={14} />
-              Independent · Non-custodial · Built on Nado
-            </span>
             <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">
               Your <span className="text-gradient-brand">calm harbor</span> on
               Nado.
