@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FundingRateHistoryCard } from "@/components/funding-rate-history-card";
 import { MarketChart } from "@/components/market-chart";
 import { MarketHeader } from "@/components/market-header";
 import { MarketSearchModal } from "@/components/market-search-modal";
@@ -47,6 +48,7 @@ export default function TradeTab() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <MarketChart productId={selectedProductId} symbol={selectedSymbol?.symbol} />
+          <FundingRateHistoryCard productId={selectedProductId} />
           <OrderBookPanel productId={selectedProductId} symbol={selectedSymbol} />
         </div>
 
