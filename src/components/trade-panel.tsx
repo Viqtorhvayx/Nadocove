@@ -29,6 +29,12 @@ import {
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
 
 const MARKET_SLIPPAGE_TOLERANCE = 0.01; // 1% — the buffer added to the best price so an "ioc" order actually fills as a market order.
+const SIZE_PRESETS = [25, 50, 75, 100] as const;
+
+function roundDownToIncrement(value: BigNumber, increment: BigNumber): BigNumber {
+  if (increment.isZero()) return value;
+  return value.div(increment).integerValue(BigNumber.ROUND_DOWN).times(increment);
+}
 
 function OpenOrders({ productId }: { productId: number | undefined }) {
   const openOrders = useOpenOrders(productId);
@@ -131,6 +137,18 @@ export function TradePanel({ symbol }: TradePanelProps) {
 
   const maxLeverage = maxLeverageFor(symbol);
   const marginFraction = symbol ? 1 - symbol.longWeightInitial.toNumber() : undefined;
+
+  // What "100%" means for the quick-size buttons: reduce-only sizes off the
+  // current position (there's no margin math when you're only closing),
+  // otherwise the largest position the available quote balance can open at
+  // this market's initial margin requirement and the current effective price.
+  const effectivePriceBn =
+    effectivePrice && Number(effectivePrice) > 0 ? new BigNumber(effectivePrice) : undefined;
+  const maxSizeableAmount = reduceOnly
+    ? position?.amount.abs()
+    : quoteBalance && marginFraction && marginFraction > 0 && effectivePriceBn
+      ? quoteBalance.amount.div(marginFraction).div(effectivePriceBn)
+      : undefined;
 
   const canSubmit =
     selectedProductId !== undefined &&
@@ -281,6 +299,24 @@ export function TradePanel({ symbol }: TradePanelProps) {
                 {symbol.symbol.split("-")[0]}
               </span>
             )}
+          </div>
+          <div className="flex gap-1.5">
+            {SIZE_PRESETS.map((pct) => (
+              <button
+                key={pct}
+                type="button"
+                disabled={!maxSizeableAmount || maxSizeableAmount.lte(0)}
+                onClick={() => {
+                  if (!maxSizeableAmount || !symbol) return;
+                  const preset = maxSizeableAmount.times(pct / 100);
+                  const rounded = roundDownToIncrement(preset, symbol.sizeIncrement);
+                  setAmount(rounded.gt(0) ? rounded.toString() : "");
+                }}
+                className="btn-tactile-secondary flex-1 rounded-md py-1.5 text-[11px] font-medium text-foreground-muted transition hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+              >
+                {pct === 100 ? "Max" : `${pct}%`}
+              </button>
+            ))}
           </div>
         </label>
 
