@@ -43,11 +43,11 @@ export function WatchlistPanel() {
             setError(null);
           }}
           placeholder="Add address: 0x…"
-          className="flex-1 rounded-full border border-border bg-surface-raised px-4 py-2 text-sm text-foreground placeholder:text-foreground-muted"
+          className="flex-1 rounded-full border border-border bg-surface-raised px-5 py-3 text-sm text-foreground placeholder:text-foreground-muted"
         />
         <button
           type="submit"
-          className="btn-tactile-secondary rounded-full px-4 py-2 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
+          className="btn-tactile-secondary rounded-full px-5 py-3 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
         >
           Add
         </button>

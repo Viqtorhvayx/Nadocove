@@ -20,11 +20,11 @@ export function AddressLookup() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Look up any address: 0x…"
-        className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-muted"
+        className="flex-1 rounded-full border border-border bg-surface px-5 py-3 text-sm text-foreground placeholder:text-foreground-muted"
       />
       <button
         type="submit"
-        className="btn-tactile-secondary rounded-full px-4 py-2.5 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
+        className="btn-tactile-secondary rounded-full px-5 py-3 text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
       >
         View
       </button>

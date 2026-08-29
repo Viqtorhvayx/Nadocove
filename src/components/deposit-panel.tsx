@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { formatUnits } from "viem";
-import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
+import { TokenSelectDropdown } from "@/components/token-select-dropdown";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 import {
   useDepositableProductIds,
@@ -67,78 +67,76 @@ export function DepositPanel() {
   });
 
   return (
-    <Card title="Deposit" note={`into subaccount "${subaccountName}"`}>
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!canSubmit) return;
-          setConfirmOpen(true);
-        }}
-      >
-        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-          Asset
-          <select
-            value={selectedProductId ?? ""}
-            onChange={(e) => setProductId(Number(e.target.value))}
-            className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-          >
-            {tokens.length === 0 && <option value="">Loading…</option>}
-            {tokens.map((t) => (
-              <option key={t.productId} value={t.productId}>
-                {t.symbol}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div className="mx-auto w-full max-w-md">
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),inset_0_-1px_0_0_rgba(0,0,0,0.2),0_16px_32px_-18px_rgba(0,0,0,0.7)]">
+        <h1 className="text-lg font-semibold text-foreground">Deposit</h1>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Into subaccount &quot;{subaccountName}&quot;
+        </p>
 
-        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-          Amount
-          <div className="flex gap-2">
-            <input
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              className="flex-1 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-            />
-            <button
-              type="button"
-              onClick={() => walletBalanceHuman && setAmount(walletBalanceHuman)}
-              disabled={!walletBalanceHuman}
-              className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:text-foreground disabled:opacity-50"
-            >
-              Max
-            </button>
-          </div>
-          <span className="text-xs text-foreground-muted">
-            Wallet balance: {walletBalanceHuman ?? "—"} {selectedToken?.symbol ?? ""}
-          </span>
-        </label>
-
-        {exceedsBalance && (
-          <p className="text-sm text-negative">Amount exceeds your wallet balance.</p>
-        )}
-
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="btn-tactile-primary rounded-full px-5 py-2.5 text-sm font-semibold text-background disabled:opacity-50"
+        <form
+          className="mt-6 flex flex-col gap-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!canSubmit) return;
+            setConfirmOpen(true);
+          }}
         >
-          Review deposit
-        </button>
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
+            Asset
+            <TokenSelectDropdown tokens={tokens} value={selectedProductId} onChange={setProductId} />
+          </label>
 
-        {depositFlow.isError && (
-          <p className="text-sm text-negative">
-            {depositFlow.error instanceof Error
-              ? depositFlow.error.message
-              : "Deposit failed."}
-          </p>
-        )}
-        {depositFlow.isSuccess && (
-          <p className="text-sm text-positive">Deposit confirmed: {depositFlow.data}</p>
-        )}
-      </form>
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
+            <span className="flex items-center justify-between">
+              Amount
+              <span className="text-foreground-muted">
+                Balance: {walletBalanceHuman ?? "—"} {selectedToken?.symbol ?? ""}
+              </span>
+            </span>
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-4">
+              <input
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                className="w-full bg-transparent text-2xl font-semibold text-foreground focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => walletBalanceHuman && setAmount(walletBalanceHuman)}
+                disabled={!walletBalanceHuman}
+                className="btn-tactile-secondary shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold text-foreground-muted transition hover:text-foreground disabled:opacity-50"
+              >
+                Max
+              </button>
+            </div>
+          </label>
+
+          {exceedsBalance && (
+            <p className="text-sm text-negative">Amount exceeds your wallet balance.</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="btn-tactile-primary rounded-full px-5 py-3.5 text-sm font-semibold text-background disabled:opacity-50"
+          >
+            Review deposit
+          </button>
+
+          {depositFlow.isError && (
+            <p className="text-sm text-negative">
+              {depositFlow.error instanceof Error
+                ? depositFlow.error.message
+                : "Deposit failed."}
+            </p>
+          )}
+          {depositFlow.isSuccess && (
+            <p className="text-sm text-positive">Deposit confirmed: {depositFlow.data}</p>
+          )}
+        </form>
+      </div>
 
       <ConfirmDialog
         title="Confirm deposit"
@@ -166,6 +164,6 @@ export function DepositPanel() {
           <ConfirmRow label="Steps" value="Deposit (1 wallet prompt)" />
         )}
       </ConfirmDialog>
-    </Card>
+    </div>
   );
 }

@@ -54,11 +54,11 @@ export function SubaccountSelector({
             onChange={(e) => setCustomName(e.target.value)}
             placeholder="new subaccount"
             maxLength={12}
-            className="w-28 rounded-lg border border-border bg-surface-raised px-2 py-1.5 text-xs text-foreground placeholder:text-foreground-muted"
+            className="w-36 rounded-lg border border-border bg-surface-raised px-3 py-2 text-xs text-foreground placeholder:text-foreground-muted"
           />
           <button
             type="submit"
-            className="rounded-lg border border-border px-2 py-1.5 text-xs text-foreground-muted transition hover:text-foreground"
+            className="rounded-lg border border-border px-3 py-2 text-xs text-foreground-muted transition hover:text-foreground"
           >
             Switch
           </button>

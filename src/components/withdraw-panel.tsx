@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
+import { TokenSelectDropdown } from "@/components/token-select-dropdown";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 import { useDepositableProductIds, useTokenMetadata, type DepositableToken } from "@/lib/use-deposit";
 import { useMaxWithdrawable, useWithdraw } from "@/lib/use-withdraw";
@@ -44,81 +44,79 @@ export function WithdrawPanel() {
   });
 
   return (
-    <Card title="Withdraw" note={`from subaccount "${subaccountName}"`}>
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!canSubmit) return;
-          setConfirmOpen(true);
-        }}
-      >
-        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-          Asset
-          <select
-            value={selectedProductId ?? ""}
-            onChange={(e) => setProductId(Number(e.target.value))}
-            className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-          >
-            {tokens.length === 0 && <option value="">Loading…</option>}
-            {tokens.map((t) => (
-              <option key={t.productId} value={t.productId}>
-                {t.symbol}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div className="mx-auto w-full max-w-md">
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),inset_0_-1px_0_0_rgba(0,0,0,0.2),0_16px_32px_-18px_rgba(0,0,0,0.7)]">
+        <h1 className="text-lg font-semibold text-foreground">Withdraw</h1>
+        <p className="mt-1 text-sm text-foreground-muted">
+          From subaccount &quot;{subaccountName}&quot;
+        </p>
 
-        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-          Amount
-          <div className="flex gap-2">
-            <input
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              className="flex-1 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-            />
-            <button
-              type="button"
-              onClick={() => maxWithdrawableHuman && setAmount(maxWithdrawableHuman)}
-              disabled={!maxWithdrawableHuman}
-              className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground-muted transition hover:text-foreground disabled:opacity-50"
-            >
-              Max
-            </button>
-          </div>
-          <span className="text-xs text-foreground-muted">
-            Available to withdraw: {maxWithdrawableHuman ?? "—"} {selectedToken?.symbol ?? ""}
-          </span>
-        </label>
-
-        {exceedsMax && (
-          <p className="text-sm text-negative">
-            Amount exceeds what&apos;s safe to withdraw from this subaccount right now.
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="btn-tactile-primary rounded-full px-5 py-2.5 text-sm font-semibold text-background disabled:opacity-50"
+        <form
+          className="mt-6 flex flex-col gap-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!canSubmit) return;
+            setConfirmOpen(true);
+          }}
         >
-          Review withdrawal
-        </button>
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
+            Asset
+            <TokenSelectDropdown tokens={tokens} value={selectedProductId} onChange={setProductId} />
+          </label>
 
-        {withdraw.isError && (
-          <p className="text-sm text-negative">
-            {withdraw.error instanceof Error ? withdraw.error.message : "Withdrawal failed."}
-          </p>
-        )}
-        {withdraw.isSuccess && (
-          <p className="text-sm text-positive">
-            Withdrawal requested. Nado&apos;s engine processes it from here — there&apos;s no
-            verified way to show exactly when it lands in your wallet.
-          </p>
-        )}
-      </form>
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
+            <span className="flex items-center justify-between">
+              Amount
+              <span className="text-foreground-muted">
+                Available: {maxWithdrawableHuman ?? "—"} {selectedToken?.symbol ?? ""}
+              </span>
+            </span>
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-4">
+              <input
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                className="w-full bg-transparent text-2xl font-semibold text-foreground focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => maxWithdrawableHuman && setAmount(maxWithdrawableHuman)}
+                disabled={!maxWithdrawableHuman}
+                className="btn-tactile-secondary shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold text-foreground-muted transition hover:text-foreground disabled:opacity-50"
+              >
+                Max
+              </button>
+            </div>
+          </label>
+
+          {exceedsMax && (
+            <p className="text-sm text-negative">
+              Amount exceeds what&apos;s safe to withdraw from this subaccount right now.
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="btn-tactile-primary rounded-full px-5 py-3.5 text-sm font-semibold text-background disabled:opacity-50"
+          >
+            Review withdrawal
+          </button>
+
+          {withdraw.isError && (
+            <p className="text-sm text-negative">
+              {withdraw.error instanceof Error ? withdraw.error.message : "Withdrawal failed."}
+            </p>
+          )}
+          {withdraw.isSuccess && (
+            <p className="text-sm text-positive">
+              Withdrawal requested. Nado&apos;s engine processes it from here — there&apos;s no
+              verified way to show exactly when it lands in your wallet.
+            </p>
+          )}
+        </form>
+      </div>
 
       <ConfirmDialog
         title="Confirm withdrawal"
@@ -140,6 +138,6 @@ export function WithdrawPanel() {
         <ConfirmRow label="To" value="Your connected wallet" />
         <ConfirmRow label="Steps" value="Sign a request (1 wallet prompt, no gas)" />
       </ConfirmDialog>
-    </Card>
+    </div>
   );
 }

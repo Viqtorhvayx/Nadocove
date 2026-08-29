@@ -51,6 +51,20 @@ export function truncateAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
+/**
+ * Nado's raw perp ticker ("BTC-PERP") doesn't show what it's actually
+ * margined/settled in. Every perp on Nado settles in the exchange's single
+ * quote asset, productId 0 — its real on-chain ERC20 symbol (read live via
+ * getTokenContractForProduct + symbol()) is "USD₮0", not USDC. Displaying
+ * it as "BTC / USD₮0" is accurate, not just prettier. Non-perp symbols
+ * pass through unchanged.
+ */
+export const QUOTE_ASSET_SYMBOL = "USD₮0";
+
+export function formatMarketPair(symbol: string): string {
+  return symbol.endsWith("-PERP") ? `${symbol.slice(0, -"-PERP".length)} / ${QUOTE_ASSET_SYMBOL}` : symbol;
+}
+
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 60 * 60 * 24 * 365],
   ["month", 60 * 60 * 24 * 30],

@@ -3,7 +3,7 @@
 import BigNumber from "bignumber.js";
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { TokenIcon } from "@/components/token-icon";
-import { formatUsd, formatPercent } from "@/lib/format";
+import { formatMarketPair, formatUsd, formatPercent } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
 import type { MarketOverviewEntry } from "@/lib/use-market-overview";
 import { usePerpPrices } from "@/lib/use-perp-prices";
@@ -46,7 +46,9 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
         className="flex items-center gap-2.5 rounded-xl px-2 py-1 text-left transition hover:bg-surface-raised"
       >
         {symbol && <TokenIcon symbol={symbol.symbol} size={28} />}
-        <span className="text-lg font-semibold text-foreground">{symbol?.symbol ?? "Select market"}</span>
+        <span className="text-lg font-semibold text-foreground">
+          {symbol ? formatMarketPair(symbol.symbol) : "Select market"}
+        </span>
         {maxLeverage !== undefined && (
           <span className="rounded-full border border-border bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-foreground-muted">
             Up to {maxLeverage}x

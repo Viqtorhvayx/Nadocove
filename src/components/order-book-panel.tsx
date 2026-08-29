@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { OrderBook } from "@/components/order-book";
 import { RecentTrades } from "@/components/recent-trades";
+import { formatMarketPair } from "@/lib/format";
 
 type Tab = "book" | "trades";
 
@@ -38,7 +39,7 @@ export function OrderBookPanel({
             </button>
           ))}
         </div>
-        <span className="text-xs text-foreground-muted">{symbol?.symbol}</span>
+        <span className="text-xs text-foreground-muted">{symbol ? formatMarketPair(symbol.symbol) : ""}</span>
       </div>
 
       <div className="mt-4">

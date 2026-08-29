@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { ProductEngineType } from "@nadohq/shared";
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { TokenIcon } from "@/components/token-icon";
-import { formatUsd, formatPercent } from "@/lib/format";
+import { formatMarketPair, formatUsd, formatPercent } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
 import { useFavoriteMarkets } from "@/lib/use-favorite-markets";
 import type { MarketOverviewEntry } from "@/lib/use-market-overview";
@@ -124,7 +124,7 @@ export function MarketSearchModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-border p-3">
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-raised px-3 py-2">
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-raised px-4 py-3">
             <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 shrink-0 text-foreground-muted">
               <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.6" />
               <path d="m17 17-4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -197,7 +197,7 @@ export function MarketSearchModal({
                 </span>
                 <span className="flex items-center gap-2 truncate font-medium">
                   <TokenIcon symbol={s.symbol} size={18} />
-                  <span className="truncate">{s.symbol}</span>
+                  <span className="truncate">{formatMarketPair(s.symbol)}</span>
                   {leverage !== undefined && (
                     <span className="shrink-0 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-foreground-muted">
                       {leverage}x

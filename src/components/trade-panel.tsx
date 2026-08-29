@@ -13,7 +13,7 @@ import {
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { TokenIcon } from "@/components/token-icon";
-import { formatAmount, formatUsd } from "@/lib/format";
+import { formatAmount, formatMarketPair, formatUsd, QUOTE_ASSET_SYMBOL } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useLiquidationEstimate } from "@/lib/use-liquidation-estimate";
@@ -253,7 +253,9 @@ export function TradePanel({ symbol }: TradePanelProps) {
         <div className="flex items-center justify-between text-xs">
           <span className="text-foreground-muted">Available to Trade</span>
           <span className="font-medium tabular-nums text-foreground">
-            {quoteBalance ? `${formatAmount(quoteBalance.amount)} USDC` : "0.00 USDC"}
+            {quoteBalance
+              ? `${formatAmount(quoteBalance.amount)} ${QUOTE_ASSET_SYMBOL}`
+              : `0.00 ${QUOTE_ASSET_SYMBOL}`}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">
@@ -263,15 +265,15 @@ export function TradePanel({ symbol }: TradePanelProps) {
           </span>
         </div>
 
-        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
+        <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
           Size
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-4 py-3.5">
             <input
               inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="w-full bg-transparent text-sm text-foreground focus:outline-none"
+              className="w-full bg-transparent text-base text-foreground focus:outline-none"
             />
             {symbol && (
               <span className="flex shrink-0 items-center gap-1.5 text-xs text-foreground-muted">
@@ -283,14 +285,14 @@ export function TradePanel({ symbol }: TradePanelProps) {
         </label>
 
         {mode !== "market" && (
-          <label className="flex flex-col gap-1 text-xs text-foreground-muted">
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
             Price
             <input
               inputMode="decimal"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder={mid ? mid.toFixed(2) : "0.00"}
-              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground focus:outline-none"
+              className="rounded-lg border border-border bg-surface-raised px-4 py-3.5 text-base text-foreground focus:outline-none"
             />
           </label>
         )}
@@ -325,7 +327,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
                   value={takeProfitPrice}
                   onChange={(e) => setTakeProfitPrice(e.target.value)}
                   placeholder="Price"
-                  className="rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-positive focus:outline-none"
+                  className="rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-positive focus:outline-none"
                 />
               </label>
               <label className="flex flex-col gap-1 text-[11px] text-foreground-muted">
@@ -335,7 +337,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
                   value={stopLossPrice}
                   onChange={(e) => setStopLossPrice(e.target.value)}
                   placeholder="Price"
-                  className="rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-negative focus:outline-none"
+                  className="rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-negative focus:outline-none"
                 />
               </label>
               <p className="col-span-2 text-[10px] leading-relaxed text-foreground-muted">
@@ -352,7 +354,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
             side === "buy" ? "btn-tactile-buy" : "btn-tactile-sell"
           }`}
         >
-          {side === "buy" ? "Buy" : "Sell"} {symbol?.symbol ?? ""}
+          {side === "buy" ? "Buy" : "Sell"} {symbol ? formatMarketPair(symbol.symbol) : ""}
         </button>
 
         {(placeOrder.isError || placeTriggerOrders.isError) && !confirmOpen && (
@@ -395,10 +397,10 @@ export function TradePanel({ symbol }: TradePanelProps) {
         open={confirmOpen}
         onCancel={() => setConfirmOpen(false)}
         onConfirm={handleConfirm}
-        confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${symbol?.symbol ?? ""}`}
+        confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${symbol ? formatMarketPair(symbol.symbol) : ""}`}
         confirming={submitting}
       >
-        <ConfirmRow label="Market" value={symbol?.symbol ?? "—"} />
+        <ConfirmRow label="Market" value={symbol ? formatMarketPair(symbol.symbol) : "—"} />
         <ConfirmRow
           label="Side"
           value={<span className="capitalize">{side}</span>}

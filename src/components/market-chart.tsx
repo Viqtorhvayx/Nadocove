@@ -4,8 +4,9 @@ import { useMemo, useState, type PointerEvent } from "react";
 import BigNumber from "bignumber.js";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
-import { formatUsd } from "@/lib/format";
+import { formatMarketPair, formatUsd } from "@/lib/format";
 import { CANDLE_PERIODS, useCandlesticks } from "@/lib/use-candlesticks";
+import { usePerpPrices } from "@/lib/use-perp-prices";
 
 const CHART_WIDTH = 600;
 const CHART_HEIGHT = 220;
@@ -19,20 +20,41 @@ const PADDING_Y = 10;
 export function MarketChart({ productId, symbol }: { productId: number | undefined; symbol: string | undefined }) {
   const [periodSeconds, setPeriodSeconds] = useState<number>(3600);
   const candles = useCandlesticks(productId, periodSeconds);
+  // Same 5s-refetching query MarketHeader uses for Mark/Oracle — react-query
+  // dedupes by queryKey, so this doesn't add an extra network request. Drawn
+  // as a live line on the chart so it's visibly moving, not just a static
+  // snapshot of closed candles.
+  const perpPrices = usePerpPrices(productId);
+  const livePrice = perpPrices.data?.markPrice;
   const [hoverIndex, setHoverIndex] = useState<number | undefined>(undefined);
 
   const data = useMemo(() => [...(candles.data ?? [])].sort((a, b) => a.time.minus(b.time).toNumber()), [candles.data]);
 
-  const { min, max, bars } = useMemo(() => {
-    if (data.length === 0) return { min: 0, max: 0, bars: [] as ReturnType<typeof buildBars> };
+  const { min, max, bars, liveY } = useMemo(() => {
+    if (data.length === 0) return { min: 0, max: 0, bars: [] as ReturnType<typeof buildBars>, liveY: undefined };
     let lo = data[0].low;
     let hi = data[0].high;
     for (const c of data) {
       if (c.low.lt(lo)) lo = c.low;
       if (c.high.gt(hi)) hi = c.high;
     }
-    return { min: lo.toNumber(), max: hi.toNumber(), bars: buildBars(data, lo.toNumber(), hi.toNumber()) };
-  }, [data]);
+    // Extend the range so the live price line always lands inside the chart
+    // even if it's moved past the loaded candles' high/low.
+    if (livePrice) {
+      if (livePrice.lt(lo)) lo = livePrice;
+      if (livePrice.gt(hi)) hi = livePrice;
+    }
+    const loNum = lo.toNumber();
+    const hiNum = hi.toNumber();
+    const range = hiNum - loNum || 1;
+    const yFor = (v: number) => CHART_HEIGHT - PADDING_Y - ((v - loNum) / range) * (CHART_HEIGHT - PADDING_Y * 2);
+    return {
+      min: loNum,
+      max: hiNum,
+      bars: buildBars(data, loNum, hiNum),
+      liveY: livePrice ? yFor(livePrice.toNumber()) : undefined,
+    };
+  }, [data, livePrice]);
 
   function buildBars(candlesData: typeof data, lo: number, hi: number) {
     const range = hi - lo || 1;
@@ -70,7 +92,18 @@ export function MarketChart({ productId, symbol }: { productId: number | undefin
   }
 
   return (
-    <Card title={symbol ?? "Market"} note="real candlesticks — Nado indexer">
+    <Card
+      title={symbol ? formatMarketPair(symbol) : "Market"}
+      note={
+        <span className="inline-flex items-center gap-1.5">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-positive" />
+          </span>
+          Live — real candlesticks, Nado indexer
+        </span>
+      }
+    >
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
         {hovered ? (
           <div className="flex flex-wrap gap-3 text-xs text-foreground-muted">
@@ -79,6 +112,10 @@ export function MarketChart({ productId, symbol }: { productId: number | undefin
             <span>L {formatUsd(hovered.low)}</span>
             <span>C {formatUsd(hovered.close)}</span>
           </div>
+        ) : livePrice ? (
+          <span className="text-xs text-foreground-muted">
+            Mark <span className="font-medium tabular-nums text-foreground">{formatUsd(livePrice)}</span>
+          </span>
         ) : (
           <span className="text-xs text-foreground-muted">Hover the chart for OHLC</span>
         )}
@@ -117,6 +154,24 @@ export function MarketChart({ productId, symbol }: { productId: number | undefin
           onPointerMove={handlePointerMove}
           onPointerLeave={() => setHoverIndex(undefined)}
         >
+          {liveY !== undefined && (
+            <>
+              <line
+                x1={0}
+                x2={CHART_WIDTH}
+                y1={liveY}
+                y2={liveY}
+                stroke="var(--color-cove-indigo)"
+                strokeWidth={1}
+                strokeDasharray="4 3"
+                opacity={0.6}
+              />
+              <circle cx={CHART_WIDTH - 6} cy={liveY} r={3} fill="var(--color-cove-indigo)">
+                <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+              </circle>
+            </>
+          )}
           {bars.map((b, i) => (
             <g key={i} opacity={hoverIndex === undefined || hoverIndex === i ? 1 : 0.55}>
               <line
