@@ -8,13 +8,28 @@ import { OrderBookPanel } from "@/components/order-book-panel";
 import { TradePanel } from "@/components/trade-panel";
 import { useSymbols } from "@/lib/use-subaccount-data";
 import { useMarketOverview } from "@/lib/use-market-overview";
+import { useTradableSymbols } from "@/lib/use-tradable-symbols";
 
 export default function TradeTab() {
   const symbolsQuery = useSymbols();
+  const tradableStatus = useTradableSymbols();
   const symbols = useMemo(() => {
     const entries = Object.values(symbolsQuery.data?.symbols ?? {});
-    return entries.sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }, [symbolsQuery.data]);
+    const filtered = entries.filter((s) => {
+      // KBTC is a real spot listing alongside BTC-PERP, but showing both as
+      // "BTC" in the market picker reads as a duplicate rather than the
+      // (perp vs. spot) distinction it actually is — keep just the perp.
+      if (s.symbol === "KBTC") return false;
+      // Markets the indexer reports as fully "not_tradable" would otherwise
+      // sit in the picker as if selectable, then fail on order placement.
+      // Skip that status only — post_only/reduce_only markets are still
+      // genuinely tradable in a constrained way, so they stay.
+      const status = tradableStatus.data?.[s.productId];
+      if (status === "not_tradable") return false;
+      return true;
+    });
+    return filtered.sort((a, b) => a.symbol.localeCompare(b.symbol));
+  }, [symbolsQuery.data, tradableStatus.data]);
 
   const productIds = useMemo(() => symbols.map((s) => s.productId), [symbols]);
   const overview = useMarketOverview(productIds);

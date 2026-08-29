@@ -10,7 +10,7 @@
 export const AVAILABLE_TOKEN_ICONS = new Set([
   "btc", "eth", "sol", "xrp", "usdc", "bnb", "doge", "ada", "avax", "link",
   "ltc", "uni", "aave", "arb", "sui", "jup", "near", "bch", "xmr", "zec",
-  "axs", "tao", "pepe", "lit",
+  "axs", "tao", "pepe", "lit", "ton", "xaut",
   // Tokenized-stock tickers Nado lists that have a real, recognizable company
   // mark (from simple-icons) — badge-style, brand-colored circle + logotype.
   // Anything not in this set (AMZN, HIMS, LLY, MRVL, MSFT, MU, NBIS, ORCL,
@@ -27,6 +27,8 @@ const ALIASES: Record<string, string> = {
   kbtc: "btc",
   kbonk: "bonk",
   kpepe: "pepe",
+  // XAUT0 is XAUT (Tether Gold) bridged as a LayerZero OFT — same asset.
+  xaut0: "xaut",
   // Wrapped tokenized-stock spot assets (wAAPLx, wTSLAx, ...) -> same
   // company mark as the -PERP market for that stock.
   waaplx: "aapl",
