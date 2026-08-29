@@ -1,17 +1,12 @@
 "use client";
 
 import type { UseQueryResult } from "@tanstack/react-query";
-import BigNumber from "bignumber.js";
-import {
-  ProductEngineType,
-  calcPerpBalanceValue,
-  calcSpotBalanceValue,
-} from "@nadohq/shared";
 import type { GetEngineSubaccountSummaryResponse } from "@nadohq/engine-client";
 import Link from "next/link";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
 import { formatUsd, formatSignedUsd, pnlColorClass } from "@/lib/format";
+import { calcTotalPortfolioValue } from "@/lib/portfolio-value";
 
 export function PortfolioOverviewCard({
   query,
@@ -63,16 +58,7 @@ export function PortfolioOverviewCard({
     );
   }
 
-  let totalValue = new BigNumber(0);
-  for (const balance of summary.balances) {
-    if (balance.amount.isZero()) continue;
-    totalValue = totalValue.plus(
-      balance.type === ProductEngineType.SPOT
-        ? calcSpotBalanceValue(balance)
-        : calcPerpBalanceValue(balance),
-    );
-  }
-
+  const totalValue = calcTotalPortfolioValue(summary)!;
   const maintenance = summary.health.maintenance;
   const isHealthy = maintenance.health.gte(0);
 
