@@ -11,6 +11,13 @@ export const AVAILABLE_TOKEN_ICONS = new Set([
   "btc", "eth", "sol", "xrp", "usdc", "bnb", "doge", "ada", "avax", "link",
   "ltc", "uni", "aave", "arb", "sui", "jup", "near", "bch", "xmr", "zec",
   "axs", "tao", "pepe", "lit",
+  // Tokenized-stock tickers Nado lists that have a real, recognizable company
+  // mark (from simple-icons) — badge-style, brand-colored circle + logotype.
+  // Anything not in this set (AMZN, HIMS, LLY, MRVL, MSFT, MU, NBIS, ORCL,
+  // SNDK, QQQ, SPY, ...) has no widely available brand SVG and falls back to
+  // the initials badge below rather than a made-up mark.
+  "aapl", "amd", "avgo", "dell", "googl", "intc", "meta", "mstr", "nvda",
+  "spcx", "tsla", "crcl",
 ]);
 
 /** Wrapped/synthetic variants that should visually use their underlying asset's logo. */
@@ -20,6 +27,13 @@ const ALIASES: Record<string, string> = {
   kbtc: "btc",
   kbonk: "bonk",
   kpepe: "pepe",
+  // Wrapped tokenized-stock spot assets (wAAPLx, wTSLAx, ...) -> same
+  // company mark as the -PERP market for that stock.
+  waaplx: "aapl",
+  wgooglx: "googl",
+  wmetax: "meta",
+  wnvdax: "nvda",
+  wtslax: "tsla",
 };
 
 /**

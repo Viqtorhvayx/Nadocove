@@ -27,12 +27,16 @@ export function TokenIcon({ symbol, size = 20, className }: TokenIconProps) {
     );
   }
 
-  const initials = ticker.slice(0, 2).toUpperCase();
+  // Tickers longer than 2 chars (mostly the tokenized-stock symbols, e.g.
+  // AAPL, TSLA) read better with the full symbol than a 2-letter initial —
+  // it's already the thing people recognize, unlike a crypto contract ticker.
+  const initials = ticker.length > 2 ? ticker.slice(0, 4).toUpperCase() : ticker.toUpperCase();
+  const fontSize = initials.length > 3 ? size * 0.3 : size * 0.42;
   return (
     <span
       aria-hidden
-      style={{ width: size, height: size, backgroundColor: fallbackColorFor(ticker) }}
-      className={`inline-flex shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-background ${className ?? ""}`}
+      style={{ width: size, height: size, backgroundColor: fallbackColorFor(ticker), fontSize }}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full font-bold leading-none text-background ${className ?? ""}`}
     >
       {initials}
     </span>
