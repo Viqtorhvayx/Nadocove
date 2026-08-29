@@ -60,6 +60,41 @@ function formatTrackValue(rankType: IndexerLeaderboardRankType, value: BigNumber
   }
 }
 
+const PAGE_SIZE = 10;
+// Stable reference so the dependent useMemo below doesn't see a "new"
+// array on every render while data is loading.
+const EMPTY_PARTICIPANTS: never[] = [];
+
+function PageButton({
+  direction,
+  disabled,
+  onClick,
+}: {
+  direction: "prev" | "next";
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={direction === "prev" ? "Previous page" : "Next page"}
+      className="btn-tactile-secondary flex h-8 w-8 items-center justify-center rounded-full text-foreground-muted transition hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+    >
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+        <path
+          d={direction === "prev" ? "M12 5l-5 5 5 5" : "M8 5l5 5-5 5"}
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
 export function DiscoverPanel() {
   const contests = useAllContests();
   const [contestId, setContestId] = useState<number | undefined>(undefined);
@@ -74,9 +109,26 @@ export function DiscoverPanel() {
   const effectiveRankType = rankType ?? selectedContest?.tracks[0]?.rankType;
 
   const leaderboard = useContestLeaderboard(effectiveContestId, effectiveRankType);
+
+  // Reset to page 1 whenever the selected contest or ranking changes —
+  // done during render (React's "adjusting state when a prop changes"
+  // pattern) rather than an effect, so there's no flash of the wrong page.
+  const [page, setPage] = useState(0);
+  const pageResetKey = `${effectiveContestId}-${effectiveRankType}`;
+  const [lastPageResetKey, setLastPageResetKey] = useState(pageResetKey);
+  if (pageResetKey !== lastPageResetKey) {
+    setLastPageResetKey(pageResetKey);
+    setPage(0);
+  }
+
+  const participants = leaderboard.data?.participants ?? EMPTY_PARTICIPANTS;
+  const totalPages = Math.max(1, Math.ceil(participants.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageStart = safePage * PAGE_SIZE;
+
   const participantAddresses = useMemo(
-    () => leaderboard.data?.participants.map((p) => p.subaccount.subaccountOwner) ?? [],
-    [leaderboard.data],
+    () => participants.slice(pageStart, pageStart + PAGE_SIZE).map((p) => p.subaccount.subaccountOwner),
+    [participants, pageStart],
   );
   const usernames = useUsernames(participantAddresses);
 
@@ -176,12 +228,12 @@ export function DiscoverPanel() {
             {leaderboard.error instanceof Error ? leaderboard.error.message : "Failed to load."}
           </p>
         )}
-        {leaderboard.data && leaderboard.data.participants.length === 0 && (
+        {leaderboard.data && participants.length === 0 && (
           <p className="text-sm text-foreground-muted">No qualified participants yet.</p>
         )}
-        {leaderboard.data && leaderboard.data.participants.length > 0 && effectiveRankType && (
+        {leaderboard.data && participants.length > 0 && effectiveRankType && (
           <div className="flex flex-col divide-y divide-border">
-            {leaderboard.data.participants.map((p) => {
+            {participants.slice(pageStart, pageStart + PAGE_SIZE).map((p) => {
               const track = p.tracks[effectiveRankType];
               const twitter = p.socialAccounts.find((a) => a.provider === "twitter");
               const nadocoveUsername = usernames.data?.[p.subaccount.subaccountOwner.toLowerCase()];
@@ -223,6 +275,16 @@ export function DiscoverPanel() {
                 </Link>
               );
             })}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-center gap-4 border-t border-border pt-4">
+            <PageButton direction="prev" disabled={safePage === 0} onClick={() => setPage(safePage - 1)} />
+            <span className="text-xs font-medium text-foreground-muted">
+              {safePage + 1} / {totalPages}
+            </span>
+            <PageButton direction="next" disabled={safePage === totalPages - 1} onClick={() => setPage(safePage + 1)} />
           </div>
         )}
       </Card>
