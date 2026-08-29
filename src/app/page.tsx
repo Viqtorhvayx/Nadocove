@@ -11,7 +11,7 @@ import { Reveal } from "@/components/reveal";
 const FEATURES = [
   {
     title: "Unified portfolio",
-    body: "Balances, positions, PnL, margin health, and fee tier across every subaccount — spot, perps, and money markets — in one dashboard.",
+    body: "Balances, positions, PnL, margin health and fee tier across every subaccount — spot, perps and money markets in one dashboard.",
     icon: "M3 16.5v-6h3.5v6H3Zm6.75 0V3h3.5v13.5h-3.5ZM16.5 16.5V9h3.5v7.5h-3.5Z",
   },
   {
@@ -21,7 +21,7 @@ const FEATURES = [
   },
   {
     title: "Trade natively",
-    body: "Place orders straight from NadoCove. Everything still settles on Nado's own orderbook — you just get a better home screen.",
+    body: "Place orders straight from NadoCove. Everything still settles on Nado's own orderbook",
     icon: "M3 14.5 8 9l3.5 3.5L17 6M17 6h-4.5M17 6v4.5",
   },
 ];
