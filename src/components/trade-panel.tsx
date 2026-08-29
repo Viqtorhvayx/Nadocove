@@ -15,7 +15,11 @@ import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { TokenIcon } from "@/components/token-icon";
 import { formatAmount, formatUsd } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
+import { useLiquidationEstimate } from "@/lib/use-liquidation-estimate";
 import { useMarketLiquidity } from "@/lib/use-market-liquidity";
+import { usePerpPrices } from "@/lib/use-perp-prices";
+import { usePlaceTriggerOrders } from "@/lib/use-place-trigger-orders";
 import {
   useCancelOrder,
   useOpenOrders,
@@ -80,15 +84,21 @@ type TradePanelProps = {
 export function TradePanel({ symbol }: TradePanelProps) {
   const selectedProductId = symbol?.productId;
   const placeOrder = usePlaceOrder();
+  const placeTriggerOrders = usePlaceTriggerOrders();
   const summary = useSubaccountSummary();
   const liquidity = useMarketLiquidity(selectedProductId, 40);
+  const perpPrices = usePerpPrices(selectedProductId);
 
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [mode, setMode] = useState<OrderMode>("market");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
   const [reduceOnly, setReduceOnly] = useState(false);
+  const [tpSlEnabled, setTpSlEnabled] = useState(false);
+  const [takeProfitPrice, setTakeProfitPrice] = useState("");
+  const [stopLossPrice, setStopLossPrice] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | undefined>(undefined);
 
   const bestAsk = liquidity.data?.asks
     ? [...liquidity.data.asks].sort((a, b) => a.price.minus(b.price).toNumber())[0]?.price
@@ -126,13 +136,55 @@ export function TradePanel({ symbol }: TradePanelProps) {
     selectedProductId !== undefined &&
     Number(amount) > 0 &&
     Number(effectivePrice) > 0 &&
-    !placeOrder.isPending;
+    !placeOrder.isPending &&
+    !placeTriggerOrders.isPending;
 
   const notional =
     Number(amount) > 0 && Number(effectivePrice) > 0
       ? new BigNumber(amount).times(effectivePrice)
       : undefined;
   const marginRequired = notional && marginFraction !== undefined ? notional.times(marginFraction) : undefined;
+
+  // Debounced so the liquidation estimate (a real engine round-trip) isn't
+  // refired on every keystroke.
+  const debouncedAmount = useDebouncedValue(amount, 400);
+  const liquidationEstimate = useLiquidationEstimate({
+    symbol,
+    side,
+    amount: debouncedAmount,
+    oraclePrice: perpPrices.data?.indexPrice,
+  });
+
+  const submitting = placeOrder.isPending || placeTriggerOrders.isPending;
+
+  async function handleConfirm() {
+    if (selectedProductId === undefined) return;
+    setSubmitError(undefined);
+    try {
+      await placeOrder.mutateAsync({
+        productId: selectedProductId,
+        side,
+        amount,
+        price: effectivePrice,
+        executionType,
+        reduceOnly: reduceOnly || undefined,
+      });
+
+      if (tpSlEnabled && (takeProfitPrice || stopLossPrice)) {
+        await placeTriggerOrders.mutateAsync({
+          productId: selectedProductId,
+          closeSide: side === "buy" ? "sell" : "buy",
+          amount,
+          takeProfitPrice: takeProfitPrice || undefined,
+          stopLossPrice: stopLossPrice || undefined,
+        });
+      }
+
+      setConfirmOpen(false);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Order failed.");
+    }
+  }
 
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),inset_0_-1px_0_0_rgba(0,0,0,0.2),0_16px_32px_-18px_rgba(0,0,0,0.7)]">
@@ -243,7 +295,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
           </label>
         )}
 
-        {mode === "pro" && (
+        <div className="flex flex-col gap-2">
           <label className="flex items-center gap-2 text-xs text-foreground-muted">
             <input
               type="checkbox"
@@ -253,7 +305,45 @@ export function TradePanel({ symbol }: TradePanelProps) {
             />
             Reduce Only
           </label>
-        )}
+
+          <label className="flex items-center gap-2 text-xs text-foreground-muted">
+            <input
+              type="checkbox"
+              checked={tpSlEnabled}
+              onChange={(e) => setTpSlEnabled(e.target.checked)}
+              className="h-3.5 w-3.5 rounded border-border accent-cove-indigo"
+            />
+            Take Profit / Stop Loss
+          </label>
+
+          {tpSlEnabled && (
+            <div className="grid grid-cols-2 gap-3 rounded-lg border border-border bg-surface-raised p-3">
+              <label className="flex flex-col gap-1 text-[11px] text-foreground-muted">
+                Take Profit
+                <input
+                  inputMode="decimal"
+                  value={takeProfitPrice}
+                  onChange={(e) => setTakeProfitPrice(e.target.value)}
+                  placeholder="Price"
+                  className="rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-positive focus:outline-none"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-[11px] text-foreground-muted">
+                Stop Loss
+                <input
+                  inputMode="decimal"
+                  value={stopLossPrice}
+                  onChange={(e) => setStopLossPrice(e.target.value)}
+                  placeholder="Price"
+                  className="rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-negative focus:outline-none"
+                />
+              </label>
+              <p className="col-span-2 text-[10px] leading-relaxed text-foreground-muted">
+                Places real reduce-only trigger orders sized to this trade — closes the position at the price you set. Uses the oracle price.
+              </p>
+            </div>
+          )}
+        </div>
 
         <button
           type="submit"
@@ -265,15 +355,15 @@ export function TradePanel({ symbol }: TradePanelProps) {
           {side === "buy" ? "Buy" : "Sell"} {symbol?.symbol ?? ""}
         </button>
 
-        {placeOrder.isError && (
+        {(placeOrder.isError || placeTriggerOrders.isError) && !confirmOpen && (
           <p className="text-sm text-negative">
-            {placeOrder.error instanceof Error
-              ? placeOrder.error.message
-              : "Order failed."}
+            {submitError ?? "Order failed."}
           </p>
         )}
-        {placeOrder.isSuccess && (
-          <p className="text-sm text-positive">Order placed.</p>
+        {placeOrder.isSuccess && !confirmOpen && (
+          <p className="text-sm text-positive">
+            Order placed{placeTriggerOrders.isSuccess ? " — TP/SL set." : "."}
+          </p>
         )}
 
         <div className="flex flex-col gap-1.5 border-t border-border pt-3 text-xs">
@@ -284,6 +374,12 @@ export function TradePanel({ symbol }: TradePanelProps) {
           <div className="flex justify-between">
             <span className="text-foreground-muted">Margin Required</span>
             <span className="tabular-nums text-foreground">{marginRequired ? formatUsd(marginRequired) : "—"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-foreground-muted">Est. Liquidation Price</span>
+            <span className="tabular-nums text-foreground">
+              {liquidationEstimate.data ? formatUsd(liquidationEstimate.data) : "—"}
+            </span>
           </div>
           {mode === "market" && (
             <div className="flex justify-between">
@@ -298,15 +394,9 @@ export function TradePanel({ symbol }: TradePanelProps) {
         title={`Confirm ${side} order`}
         open={confirmOpen}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          if (selectedProductId === undefined) return;
-          placeOrder.mutate(
-            { productId: selectedProductId, side, amount, price: effectivePrice, executionType, reduceOnly: mode === "pro" ? reduceOnly : undefined },
-            { onSuccess: () => setConfirmOpen(false) },
-          );
-        }}
+        onConfirm={handleConfirm}
         confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${symbol?.symbol ?? ""}`}
-        confirming={placeOrder.isPending}
+        confirming={submitting}
       >
         <ConfirmRow label="Market" value={symbol?.symbol ?? "—"} />
         <ConfirmRow
@@ -323,12 +413,23 @@ export function TradePanel({ symbol }: TradePanelProps) {
           label="Notional"
           value={notional ? formatUsd(notional) : "—"}
         />
+        <ConfirmRow
+          label="Est. Liquidation Price"
+          value={liquidationEstimate.data ? formatUsd(liquidationEstimate.data) : "—"}
+        />
+        {tpSlEnabled && takeProfitPrice && (
+          <ConfirmRow label="Take Profit" value={formatUsd(new BigNumber(takeProfitPrice))} />
+        )}
+        {tpSlEnabled && stopLossPrice && (
+          <ConfirmRow label="Stop Loss" value={formatUsd(new BigNumber(stopLossPrice))} />
+        )}
         {BUILDER_ID > 0 && (
           <ConfirmRow
             label="Builder fee"
             value={`${BUILDER_FEE_RATE / 100}bps to NadoCove`}
           />
         )}
+        {submitError && <p className="text-sm text-negative">{submitError}</p>}
       </ConfirmDialog>
 
       <div className="mt-6 border-t border-border pt-4">
