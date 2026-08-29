@@ -18,6 +18,7 @@ import { PnlStatsCard } from "@/components/pnl-stats-card";
 import { PointsCard } from "@/components/points-card";
 import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
 import { TokenIcon } from "@/components/token-icon";
+import { XPointsCard } from "@/components/xpoints-card";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 
@@ -120,6 +121,7 @@ function StatsTab({
       <PnlStatsCard owner={address} subaccountName={subaccountName} />
       <FeeTierCard query={feeRatesQuery} />
       {address && <PointsCard address={address} />}
+      {address && <XPointsCard address={address} />}
       <CashIncentivesCard address={address} />
       <ClaimBuilderFeeCard />
     </div>
