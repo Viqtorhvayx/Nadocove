@@ -124,7 +124,7 @@ export function MarketSearchModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-border p-3">
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-raised px-4 py-3">
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-raised px-4 py-3 transition-colors focus-within:border-cove-indigo">
             <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 shrink-0 text-foreground-muted">
               <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.6" />
               <path d="m17 17-4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />

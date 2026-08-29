@@ -11,6 +11,7 @@ import { useNadoClient } from "@/lib/use-nado-client";
 import { readOnlyNadoClient } from "@/lib/nado-read-client";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
+import { rescaleSubaccountSummary } from "@/lib/rescale-subaccount-summary";
 
 export { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
 
@@ -26,6 +27,7 @@ export function useSubaccountSummary() {
         subaccountOwner: address!,
         subaccountName,
       }),
+    select: rescaleSubaccountSummary,
     enabled: Boolean(nadoClient && address),
     refetchInterval: 15_000,
   });

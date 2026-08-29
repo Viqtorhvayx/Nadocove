@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isAddress, type Address } from "viem";
 import { readOnlyNadoClient } from "@/lib/nado-read-client";
 import { DEFAULT_SUBACCOUNT_NAME } from "@/lib/subaccount-constants";
+import { rescaleSubaccountSummary } from "@/lib/rescale-subaccount-summary";
 
 export function useAddressSummary(
   address: string | undefined,
@@ -16,6 +17,7 @@ export function useAddressSummary(
         subaccountOwner: validAddress!,
         subaccountName,
       }),
+    select: rescaleSubaccountSummary,
     enabled: Boolean(validAddress),
   });
 }

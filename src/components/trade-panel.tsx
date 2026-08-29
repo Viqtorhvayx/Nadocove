@@ -285,7 +285,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
 
         <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
           Size
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-4 py-3.5">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-4 py-3.5 transition-colors focus-within:border-cove-indigo">
             <input
               inputMode="decimal"
               value={amount}
@@ -328,7 +328,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder={mid ? mid.toFixed(2) : "0.00"}
-              className="rounded-lg border border-border bg-surface-raised px-4 py-3.5 text-base text-foreground focus:outline-none"
+              className="rounded-lg border border-border bg-surface-raised px-4 py-3.5 text-base text-foreground transition-colors focus:border-cove-indigo focus:outline-none"
             />
           </label>
         )}

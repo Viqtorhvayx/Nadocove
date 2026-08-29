@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+import { truncateAddress } from "@/lib/format";
 
 type ConnectButtonProps = {
   className?: string;
@@ -53,7 +54,7 @@ export function ConnectButton({ className }: ConnectButtonProps) {
                 onClick={openAccountModal}
                 className={`${baseClass} btn-tactile-secondary text-foreground hover:brightness-110`}
               >
-                {account.displayName}
+                {account.ensName ?? truncateAddress(account.address)}
               </button>
             )}
           </div>

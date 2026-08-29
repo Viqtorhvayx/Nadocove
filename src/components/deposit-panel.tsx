@@ -101,7 +101,7 @@ export function DepositPanel() {
                 Balance: {walletBalanceHuman ?? "—"} {selectedToken?.symbol ?? ""}
               </span>
             </span>
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-4">
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-4 transition-colors focus-within:border-cove-indigo">
               <input
                 inputMode="decimal"
                 value={amount}
