@@ -4,11 +4,40 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import BigNumber from "bignumber.js";
 import type { IndexerLeaderboardRankType } from "@nadohq/indexer-client";
+import { AddressAvatar } from "@/components/address-avatar";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
-import { formatAmount, formatUsd, truncateAddress } from "@/lib/format";
+import { formatAmount, formatUsd, pnlColorClass, truncateAddress } from "@/lib/format";
 import { useAllContests, useContestLeaderboard } from "@/lib/use-competitions";
 import { useUsernames } from "@/lib/use-username";
+
+const RANK_MEDAL: Record<number, { bg: string; text: string }> = {
+  1: { bg: "bg-[#F5B942]/15 ring-[#F5B942]/30", text: "text-[#F5B942]" },
+  2: { bg: "bg-[#C7CCD8]/15 ring-[#C7CCD8]/30", text: "text-[#C7CCD8]" },
+  3: { bg: "bg-[#C97C4B]/15 ring-[#C97C4B]/30", text: "text-[#C97C4B]" },
+};
+
+function RankBadge({ rank }: { rank: number | undefined }) {
+  const medal = rank !== undefined ? RANK_MEDAL[rank] : undefined;
+  if (medal) {
+    return (
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ring-1 ${medal.bg} ${medal.text}`}
+      >
+        {rank}
+      </span>
+    );
+  }
+  return (
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center text-sm font-medium text-foreground-muted">
+      {rank ?? "—"}
+    </span>
+  );
+}
+
+function trackValueColorClass(rankType: IndexerLeaderboardRankType, value: BigNumber): string {
+  return rankType === "roi" || rankType === "pnl" ? pnlColorClass(value) : "text-foreground";
+}
 
 const RANK_TYPE_LABEL: Record<IndexerLeaderboardRankType, string> = {
   roi: "Highest ROI",
@@ -156,29 +185,41 @@ export function DiscoverPanel() {
               const track = p.tracks[effectiveRankType];
               const twitter = p.socialAccounts.find((a) => a.provider === "twitter");
               const nadocoveUsername = usernames.data?.[p.subaccount.subaccountOwner.toLowerCase()];
-              const displayName = nadocoveUsername
-                ? `@${nadocoveUsername}`
-                : twitter
-                  ? `@${twitter.username}`
-                  : truncateAddress(p.subaccount.subaccountOwner);
+              const claimedName = nadocoveUsername ? `@${nadocoveUsername}` : twitter ? `@${twitter.username}` : undefined;
+              const displayName = claimedName ?? truncateAddress(p.subaccount.subaccountOwner);
+              const rank = track?.rank !== undefined ? track.rank.toNumber() : undefined;
               return (
                 <Link
                   key={p.subaccount.subaccountOwner + p.subaccount.subaccountName}
                   href={`/u/${p.subaccount.subaccountOwner}`}
-                  className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 text-sm transition hover:bg-surface-raised hover:text-cove-indigo"
+                  className="group -mx-3 flex items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-surface-raised"
                 >
-                  <span className="flex items-center gap-3">
-                    <span className="w-6 text-foreground-muted">
-                      #{track?.rank.toString() ?? "—"}
-                    </span>
-                    <span className="font-mono text-foreground">{displayName}</span>
-                    {p.subaccount.subaccountName !== "default" && (
-                      <span className="text-xs text-foreground-muted">
-                        ({p.subaccount.subaccountName})
+                  <span className="flex min-w-0 items-center gap-3">
+                    <RankBadge rank={rank} />
+                    <AddressAvatar address={p.subaccount.subaccountOwner} size={34} />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="flex items-center gap-1.5">
+                        <span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-cove-indigo">
+                          {displayName}
+                        </span>
+                        {p.subaccount.subaccountName !== "default" && (
+                          <span className="shrink-0 rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-foreground-muted">
+                            {p.subaccount.subaccountName}
+                          </span>
+                        )}
                       </span>
-                    )}
+                      {claimedName && (
+                        <span className="font-mono text-xs text-foreground-muted">
+                          {truncateAddress(p.subaccount.subaccountOwner)}
+                        </span>
+                      )}
+                    </span>
                   </span>
-                  <span className="text-foreground-muted">
+                  <span
+                    className={`shrink-0 text-right text-sm font-semibold ${
+                      track ? trackValueColorClass(effectiveRankType, track.value) : "text-foreground-muted"
+                    }`}
+                  >
                     {track ? formatTrackValue(effectiveRankType, track.value) : "—"}
                   </span>
                 </Link>
