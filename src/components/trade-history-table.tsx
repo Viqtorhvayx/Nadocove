@@ -4,9 +4,12 @@ import { removeDecimals } from "@nadohq/shared";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
 import { TokenIcon } from "@/components/token-icon";
+import { downloadCsv } from "@/lib/csv-export";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 import { useMatchHistory } from "@/lib/use-match-history";
+
+const CSV_HEADERS = ["Time", "Market", "Side", "Type", "Size", "Price", "Fee", "Realized PnL"];
 
 export function TradeHistoryTable({
   owner,
@@ -15,11 +18,52 @@ export function TradeHistoryTable({
   owner: string | undefined;
   subaccountName: string;
 }) {
-  const history = useMatchHistory(owner, subaccountName);
+  const history = useMatchHistory(owner, subaccountName, 500);
   const symbolMap = useSymbolMap();
 
+  function handleExport() {
+    if (!history.data || history.data.length === 0) return;
+    const rows = history.data.map((fill) => {
+      const isBuy = fill.baseFilled.gt(0);
+      const price = fill.baseFilled.isZero()
+        ? fill.quoteFilled.abs()
+        : fill.quoteFilled.abs().div(fill.baseFilled.abs());
+      const size = removeDecimals(fill.baseFilled.abs(), 18);
+      const fee = removeDecimals(fill.totalFee, 18);
+      const realizedPnl = removeDecimals(fill.realizedPnl, 18);
+      const symbol = symbolMap[fill.productId] ?? `#${fill.productId}`;
+      return [
+        new Date(fill.timestamp.toNumber() * 1000).toISOString(),
+        symbol,
+        isBuy ? "buy" : "sell",
+        fill.isTaker ? "taker" : "maker",
+        size.toString(),
+        price.toString(),
+        fee.toString(),
+        realizedPnl.toString(),
+      ];
+    });
+    downloadCsv(`nadocove-trades-${subaccountName}-${new Date().toISOString().slice(0, 10)}.csv`, CSV_HEADERS, rows);
+  }
+
   return (
-    <Card title="Trade history" note={`"${subaccountName}"`}>
+    <Card
+      title="Trade history"
+      note={
+        <span className="flex items-center gap-3">
+          {`"${subaccountName}"`}
+          {history.data && history.data.length > 0 && (
+            <button
+              type="button"
+              onClick={handleExport}
+              className="btn-tactile-secondary rounded-full px-3 py-1 text-xs font-medium text-foreground-muted transition hover:text-foreground"
+            >
+              Export CSV
+            </button>
+          )}
+        </span>
+      }
+    >
       {history.isLoading && (
         <div className="flex flex-col gap-3">
           {[0, 1, 2, 3].map((i) => (
