@@ -3,6 +3,7 @@
 import { useAccount } from "wagmi";
 import { AppShell } from "@/components/app-shell";
 import { ConnectButton } from "@/components/connect-button";
+import { MarginHealthBanner } from "@/components/margin-health-banner";
 import { SubaccountProvider } from "@/lib/subaccount-context";
 
 export default function DashboardLayout({
@@ -27,7 +28,10 @@ export default function DashboardLayout({
 
       {isConnected && (
         <SubaccountProvider>
-          <div className="flex flex-1 flex-col gap-6">{children}</div>
+          <div className="flex flex-1 flex-col gap-6">
+            <MarginHealthBanner />
+            {children}
+          </div>
         </SubaccountProvider>
       )}
     </AppShell>
