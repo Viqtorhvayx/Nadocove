@@ -253,21 +253,31 @@ export function HeroMockup() {
         )}
 
         <div className="mt-4 flex flex-col gap-1">
-          {DEPTH_ROWS.map((row, i) => (
-            <div key={i} className="relative h-2.5 overflow-hidden rounded-sm bg-surface-raised">
-              <div
-                className={`absolute inset-y-0 ${row.side === "bid" ? "left-0 bg-positive/25" : "right-0 bg-negative/25"}`}
-                style={{ width: `${row.width}%` }}
-              />
-            </div>
-          ))}
+          {DEPTH_ROWS.map((row, i) => {
+            const isBid = row.side === "bid";
+            const color = isBid ? "var(--color-positive)" : "var(--color-negative)";
+            return (
+              <div key={i} className="relative h-2.5 overflow-hidden rounded-sm bg-surface-raised">
+                <div
+                  className={`absolute inset-y-0 ${isBid ? "left-0" : "right-0"}`}
+                  style={{
+                    width: `${row.width}%`,
+                    backgroundImage: isBid
+                      ? `linear-gradient(to right, color-mix(in srgb, ${color} 12%, transparent), color-mix(in srgb, ${color} 65%, transparent))`
+                      : `linear-gradient(to left, color-mix(in srgb, ${color} 12%, transparent), color-mix(in srgb, ${color} 65%, transparent))`,
+                    boxShadow: `0 0 6px 0 color-mix(in srgb, ${color} 55%, transparent)`,
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-4 flex gap-2">
-          <span className="flex-1 rounded-lg border border-positive/40 bg-positive/10 py-2 text-center text-xs font-semibold text-positive">
+          <span className="btn-tactile-buy flex-1 rounded-lg py-2 text-center text-xs font-semibold text-background">
             Buy
           </span>
-          <span className="flex-1 rounded-lg border border-negative/40 bg-negative/10 py-2 text-center text-xs font-semibold text-negative">
+          <span className="btn-tactile-sell flex-1 rounded-lg py-2 text-center text-xs font-semibold text-background">
             Sell
           </span>
         </div>

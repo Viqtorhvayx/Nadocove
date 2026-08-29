@@ -144,6 +144,46 @@ textarea:focus-visible,
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
 }
 
+/* Buy/Sell, same tactile recipe as primary/secondary but tinted to the
+   PnL colors and given a glow instead of a neutral shadow — used where a
+   trade action should read as its side at a glance (order-confirm buttons,
+   the hero mockup's Buy/Sell chips). */
+.btn-tactile-buy {
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-positive) 100%, white 15%), color-mix(in srgb, var(--color-positive) 75%, black 12%));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2),
+    0 6px 16px -4px color-mix(in srgb, var(--color-positive) 60%, transparent);
+  transition: box-shadow 120ms ease, transform 80ms ease, filter 120ms ease;
+}
+.btn-tactile-buy:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.btn-tactile-buy:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.35),
+    0 2px 8px -3px color-mix(in srgb, var(--color-positive) 60%, transparent);
+}
+
+.btn-tactile-sell {
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--color-negative) 100%, white 15%), color-mix(in srgb, var(--color-negative) 75%, black 12%));
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2),
+    0 6px 16px -4px color-mix(in srgb, var(--color-negative) 60%, transparent);
+  transition: box-shadow 120ms ease, transform 80ms ease, filter 120ms ease;
+}
+.btn-tactile-sell:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.btn-tactile-sell:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.35),
+    0 2px 8px -3px color-mix(in srgb, var(--color-negative) 60%, transparent);
+}
+
 /* Selected sidebar item — same tactile language as the buttons above
    (gradient fill, top highlight), sized for a nav row rather than a
    pill button: a lit, slightly recessed tab instead of a raised button,
