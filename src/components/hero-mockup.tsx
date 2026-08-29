@@ -21,6 +21,33 @@ const CHART_PAD = 10;
 
 const ROTATE_MS = 4500;
 
+type ChartPoint = { x: number; y: number; value: number };
+
+/**
+ * Catmull-Rom -> cubic Bezier control points for the segment p1->p2, so the
+ * curve passes through every real point with a continuous tangent instead
+ * of meeting at a sharp corner (each straight <line> segment used to kink
+ * at every candle). Neighboring points shape the pull on each side; missing
+ * neighbors at the ends just reuse the nearest point.
+ */
+function smoothSegments(pts: ChartPoint[]) {
+  const segments: { p1: ChartPoint; p2: ChartPoint; cp1: ChartPoint; cp2: ChartPoint; up: boolean }[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    segments.push({
+      p1,
+      p2,
+      cp1: { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6, value: 0 },
+      cp2: { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6, value: 0 },
+      up: p2.value >= p1.value,
+    });
+  }
+  return segments;
+}
+
 /**
  * A glowing trend line built from real hourly closes — segments color by
  * direction (up/down), with a blurred "halo" stroke under a crisp one for
@@ -57,6 +84,7 @@ function NeonTrendChart({ closes: closesBN }: { closes: BigNumber[] }) {
   const last = pts[pts.length - 1];
   const overallUp = last.value >= first.value;
   const changePct = first.value > 0 ? ((last.value - first.value) / first.value) * 100 : 0;
+  const segments = smoothSegments(pts);
 
   return (
     <div className="relative mt-3 h-28 w-full">
@@ -99,17 +127,17 @@ function NeonTrendChart({ closes: closesBN }: { closes: BigNumber[] }) {
           opacity="0.35"
         />
 
-        {/* glow halo, then crisp line, per up/down segment */}
-        {pts.slice(1).map((p, i) => {
-          const prev = pts[i];
-          const color = p.value >= prev.value ? "var(--color-positive)" : "var(--color-negative)";
+        {/* glow halo, then crisp line, per up/down segment — cubic beziers
+            through the real points so the curve stays smooth instead of
+            kinking at every candle */}
+        {segments.map((s, i) => {
+          const color = s.up ? "var(--color-positive)" : "var(--color-negative)";
+          const d = `M ${s.p1.x},${s.p1.y} C ${s.cp1.x},${s.cp1.y} ${s.cp2.x},${s.cp2.y} ${s.p2.x},${s.p2.y}`;
           return (
-            <line
+            <path
               key={`halo-${i}`}
-              x1={prev.x}
-              y1={prev.y}
-              x2={p.x}
-              y2={p.y}
+              d={d}
+              fill="none"
               stroke={color}
               strokeWidth="9"
               strokeLinecap="round"
@@ -118,12 +146,10 @@ function NeonTrendChart({ closes: closesBN }: { closes: BigNumber[] }) {
             />
           );
         })}
-        {pts.slice(1).map((p, i) => {
-          const prev = pts[i];
-          const color = p.value >= prev.value ? "var(--color-positive)" : "var(--color-negative)";
-          return (
-            <line key={`line-${i}`} x1={prev.x} y1={prev.y} x2={p.x} y2={p.y} stroke={color} strokeWidth="2" strokeLinecap="round" />
-          );
+        {segments.map((s, i) => {
+          const color = s.up ? "var(--color-positive)" : "var(--color-negative)";
+          const d = `M ${s.p1.x},${s.p1.y} C ${s.cp1.x},${s.cp1.y} ${s.cp2.x},${s.cp2.y} ${s.p2.x},${s.p2.y}`;
+          return <path key={`line-${i}`} d={d} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" />;
         })}
 
         <circle cx={first.x} cy={first.y} r="5" fill="var(--color-positive)" opacity="0.65" filter="url(#hero-chart-glow)" />
