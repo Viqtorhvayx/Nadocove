@@ -1,45 +1,19 @@
 "use client";
 
-import Link from "next/link";
-import { useAccount } from "wagmi";
-import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+import { WalletCta } from "@/components/wallet-cta";
 
 const FAB_CLASS =
-  "btn-tactile-primary fixed bottom-8 right-6 z-40 rounded-full px-5 py-3 text-sm font-semibold text-background sm:right-8";
+  "btn-tactile-primary fixed bottom-8 right-6 z-40 hidden rounded-full px-5 py-3 text-sm font-semibold text-background sm:right-8 lg:inline-flex";
 
 /**
- * The landing page's one persistent action — anchored to the side instead
- * of living in the header, so it stays reachable while scrolling without
- * pinning app-internal nav (Discover, Dashboard) in front of first-time
- * visitors who haven't connected anything yet. Doubles as the one-click
- * path into the dashboard once a wallet is connected.
+ * The landing page's persistent action on wide screens — anchored to the
+ * side instead of living in the header, so it stays reachable while
+ * scrolling without pinning app-internal nav (Discover, Dashboard) in
+ * front of first-time visitors who haven't connected anything yet. Hidden
+ * below lg: the hero's own CTA sits right at the top of a narrower page,
+ * so a fixed duplicate only risks overlapping the hero mockup card that
+ * follows it.
  */
 export function HomeConnectFab() {
-  const { isConnected } = useAccount();
-
-  if (isConnected) {
-    return (
-      <Link href="/dashboard" className={FAB_CLASS}>
-        Go to Dashboard →
-      </Link>
-    );
-  }
-
-  return (
-    <RainbowConnectButton.Custom>
-      {({ openConnectModal, mounted }) => (
-        <button
-          type="button"
-          onClick={openConnectModal}
-          {...(!mounted && {
-            "aria-hidden": true,
-            style: { opacity: 0, pointerEvents: "none" },
-          })}
-          className={FAB_CLASS}
-        >
-          Connect Wallet
-        </button>
-      )}
-    </RainbowConnectButton.Custom>
-  );
+  return <WalletCta className={FAB_CLASS} />;
 }
