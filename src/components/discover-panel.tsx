@@ -22,14 +22,14 @@ function RankBadge({ rank }: { rank: number | undefined }) {
   if (medal) {
     return (
       <span
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ring-1 ${medal.bg} ${medal.text}`}
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ring-1 ${medal.bg} ${medal.text}`}
       >
         {rank}
       </span>
     );
   }
   return (
-    <span className="flex h-8 w-8 shrink-0 items-center justify-center text-sm font-medium text-foreground-muted">
+    <span className="flex h-5 w-5 shrink-0 items-center justify-center text-xs font-medium text-foreground-muted">
       {rank ?? "—"}
     </span>
   );
@@ -192,25 +192,23 @@ export function DiscoverPanel() {
                 <Link
                   key={p.subaccount.subaccountOwner + p.subaccount.subaccountName}
                   href={`/u/${p.subaccount.subaccountOwner}`}
-                  className="group -mx-3 flex items-center justify-between gap-3 rounded-xl px-3 py-3 transition hover:bg-surface-raised"
+                  className="group -mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition hover:bg-surface-raised"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
+                  <span className="flex min-w-0 items-center gap-2.5">
                     <RankBadge rank={rank} />
-                    <AddressAvatar address={p.subaccount.subaccountOwner} size={34} />
-                    <span className="flex min-w-0 flex-col">
-                      <span className="flex items-center gap-1.5">
-                        <span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-cove-indigo">
-                          {displayName}
-                        </span>
-                        {p.subaccount.subaccountName !== "default" && (
-                          <span className="shrink-0 rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-foreground-muted">
-                            {p.subaccount.subaccountName}
-                          </span>
-                        )}
+                    <AddressAvatar address={p.subaccount.subaccountOwner} size={22} />
+                    <span className="flex min-w-0 items-baseline gap-1.5">
+                      <span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-cove-indigo">
+                        {displayName}
                       </span>
                       {claimedName && (
-                        <span className="font-mono text-xs text-foreground-muted">
+                        <span className="shrink-0 font-mono text-xs text-foreground-muted">
                           {truncateAddress(p.subaccount.subaccountOwner)}
+                        </span>
+                      )}
+                      {p.subaccount.subaccountName !== "default" && (
+                        <span className="shrink-0 rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-foreground-muted">
+                          {p.subaccount.subaccountName}
                         </span>
                       )}
                     </span>
