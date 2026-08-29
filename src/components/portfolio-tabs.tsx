@@ -13,6 +13,7 @@ import {
 import type { GetEngineSubaccountSummaryResponse, GetEngineSubaccountFeeRatesResponse } from "@nadohq/engine-client";
 import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
 import { FeeTierCard } from "@/components/fee-tier-card";
+import { PnlStatsCard } from "@/components/pnl-stats-card";
 import { PointsCard } from "@/components/points-card";
 import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
 import { TokenIcon } from "@/components/token-icon";
@@ -105,14 +106,17 @@ function StatsTab({
   summaryQuery,
   feeRatesQuery,
   address,
+  subaccountName,
 }: {
   summaryQuery: SummaryQuery;
   feeRatesQuery: UseQueryResult<GetEngineSubaccountFeeRatesResponse>;
   address: string | undefined;
+  subaccountName: string;
 }) {
   return (
     <div className="flex flex-col gap-4">
       <PortfolioOverviewCard query={summaryQuery} />
+      <PnlStatsCard owner={address} subaccountName={subaccountName} />
       <FeeTierCard query={feeRatesQuery} />
       {address && <PointsCard address={address} />}
       <ClaimBuilderFeeCard />
@@ -127,10 +131,12 @@ export function PortfolioTabs({
   summaryQuery,
   feeRatesQuery,
   address,
+  subaccountName,
 }: {
   summaryQuery: SummaryQuery;
   feeRatesQuery: UseQueryResult<GetEngineSubaccountFeeRatesResponse>;
   address: string | undefined;
+  subaccountName: string;
 }) {
   const [tab, setTab] = useState<Tab>("Tokens");
 
@@ -154,7 +160,9 @@ export function PortfolioTabs({
       <div className="pt-2">
         {tab === "Tokens" && <TokensTab query={summaryQuery} />}
         {tab === "Perps" && <PerpsTab query={summaryQuery} />}
-        {tab === "Stats" && <StatsTab summaryQuery={summaryQuery} feeRatesQuery={feeRatesQuery} address={address} />}
+        {tab === "Stats" && (
+          <StatsTab summaryQuery={summaryQuery} feeRatesQuery={feeRatesQuery} address={address} subaccountName={subaccountName} />
+        )}
       </div>
     </div>
   );

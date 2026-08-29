@@ -36,7 +36,12 @@ export default function PortfolioTab() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <PortfolioPerformanceHero address={address} subaccountName={subaccountName} />
-          <PortfolioTabs summaryQuery={summary} feeRatesQuery={feeRates} address={address} />
+          <PortfolioTabs
+            summaryQuery={summary}
+            feeRatesQuery={feeRates}
+            address={address}
+            subaccountName={subaccountName}
+          />
         </div>
 
         <div className="lg:col-span-1">
