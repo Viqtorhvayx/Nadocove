@@ -2,9 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
+import { Skeleton } from "@/components/skeleton";
 import { TokenSelectDropdown } from "@/components/token-select-dropdown";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
+import { useDirectDepositAddress } from "@/lib/use-direct-deposit-address";
 import {
   useDepositableProductIds,
   useTokenMetadata,
@@ -21,10 +24,13 @@ import {
 } from "@/lib/deposit-math";
 
 export function DepositPanel() {
+  const { address } = useAccount();
   const { subaccountName } = useActiveSubaccount();
   const productIds = useDepositableProductIds();
   const metaQueries = useTokenMetadata(productIds);
   const [referralCodeInput, setReferralCodeInput] = useState("");
+  const dda = useDirectDepositAddress(address, subaccountName);
+  const [ddaCopied, setDdaCopied] = useState(false);
 
   const tokens = useMemo(
     () =>
@@ -148,6 +154,35 @@ export function DepositPanel() {
           )}
         </form>
       </div>
+
+      {(dda.isLoading || dda.data) && (
+        <div className="mt-4 rounded-2xl border border-border bg-surface p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-foreground-muted">Direct deposit address</span>
+            {dda.data && (
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard?.writeText(dda.data).then(() => {
+                    setDdaCopied(true);
+                    setTimeout(() => setDdaCopied(false), 1500);
+                  });
+                }}
+                className="btn-tactile-secondary rounded-full px-3 py-1 text-xs font-medium text-foreground-muted transition hover:text-foreground"
+              >
+                {ddaCopied ? "Copied!" : "Copy"}
+              </button>
+            )}
+          </div>
+          {dda.isLoading && <Skeleton className="mt-2 h-4 w-3/4" />}
+          {dda.data && <p className="mt-2 break-all font-mono text-sm text-foreground">{dda.data}</p>}
+          <p className="mt-2 text-xs text-foreground-muted">
+            A dedicated address unique to this subaccount — funds sent here credit it directly.
+            Verify with Nado what it accepts before sending anything; this isn&apos;t documented
+            in the SDK NadoCove is built on.
+          </p>
+        </div>
+      )}
 
       <ConfirmDialog
         title="Confirm deposit"

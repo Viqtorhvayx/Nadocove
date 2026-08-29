@@ -1,6 +1,7 @@
 import { AddressLookup } from "@/components/address-lookup";
 import { AppShell } from "@/components/app-shell";
 import { DiscoverPanel } from "@/components/discover-panel";
+import { NlpPoolCard } from "@/components/nlp-pool-card";
 
 export default function DiscoverPage() {
   return (
@@ -15,6 +16,8 @@ export default function DiscoverPage() {
           <AddressLookup />
         </div>
       </div>
+
+      <NlpPoolCard />
 
       <DiscoverPanel />
     </AppShell>
