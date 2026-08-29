@@ -24,6 +24,7 @@ export function DepositPanel() {
   const { subaccountName } = useActiveSubaccount();
   const productIds = useDepositableProductIds();
   const metaQueries = useTokenMetadata(productIds);
+  const [referralCodeInput, setReferralCodeInput] = useState("");
 
   const tokens = useMemo(
     () =>
@@ -117,6 +118,16 @@ export function DepositPanel() {
             <p className="text-sm text-negative">Amount exceeds your wallet balance.</p>
           )}
 
+          <label className="flex flex-col gap-1.5 text-xs text-foreground-muted">
+            Referral code (optional)
+            <input
+              value={referralCodeInput}
+              onChange={(e) => setReferralCodeInput(e.target.value)}
+              placeholder="Have a code? Enter it here"
+              className="rounded-lg border border-border bg-surface-raised px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted"
+            />
+          </label>
+
           <button
             type="submit"
             disabled={!canSubmit}
@@ -145,7 +156,7 @@ export function DepositPanel() {
         onConfirm={() => {
           if (selectedProductId === undefined || amountRaw === undefined) return;
           depositFlow.mutate(
-            { productId: selectedProductId, amountRaw, needsApproval },
+            { productId: selectedProductId, amountRaw, needsApproval, referralCode: referralCodeInput.trim() || undefined },
             { onSuccess: () => setConfirmOpen(false) },
           );
         }}
@@ -155,6 +166,9 @@ export function DepositPanel() {
         <ConfirmRow label="Asset" value={selectedToken?.symbol ?? "—"} />
         <ConfirmRow label="Amount" value={amount || "—"} />
         <ConfirmRow label="Into subaccount" value={subaccountName} />
+        {referralCodeInput.trim() && (
+          <ConfirmRow label="Referral code" value={referralCodeInput.trim()} />
+        )}
         {needsApproval ? (
           <ConfirmRow
             label="Steps"

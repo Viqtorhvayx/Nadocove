@@ -114,10 +114,14 @@ export function useDepositFlow() {
       productId,
       amountRaw,
       needsApproval,
+      referralCode,
     }: {
       productId: number;
       amountRaw: bigint;
       needsApproval: boolean;
+      /** Real on-chain attribution via the Endpoint contract's
+       * depositCollateralWithReferral — not NadoCove's own referral system. */
+      referralCode?: string;
     }) => {
       if (!nadoClient || !publicClient) {
         throw new Error("Connect a wallet first.");
@@ -135,6 +139,7 @@ export function useDepositFlow() {
         subaccountName,
         productId,
         amount: amountRaw,
+        referralCode: referralCode || undefined,
       });
       await publicClient.waitForTransactionReceipt({ hash: depositHash });
       return depositHash;
@@ -146,3 +151,10 @@ export function useDepositFlow() {
     },
   });
 }
+
+// A useReferralCode() read (indexerClient.getReferralCode) was tried here
+// and removed: confirmed live against Nado's real indexer that its
+// "referral_code" query type isn't recognized on either /v1 or
+// /rewards/v1 — a genuine mismatch between the published SDK and the
+// deployed API, not something fixable on this end. depositCollateralWithReferral
+// below is a separate on-chain contract call and unaffected by this.
