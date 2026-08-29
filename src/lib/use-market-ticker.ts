@@ -20,13 +20,17 @@ export type TickerEntry = {
   symbol: string;
   price: BigNumber;
   changePct: BigNumber;
+  /** Sorted 1h candle closes for the same window changePct is computed
+   * from — kept around so anything wanting a little trend line (the hero
+   * mockup) can reuse this one fetch instead of firing its own per symbol. */
+  closes: BigNumber[];
 };
 
 /**
- * Real prices for the landing page's live ticker strip — no synthesized
- * numbers. Price is the latest 1h candle's close; changePct compares it to
- * the close ~24 candles back (~24h ago) for an approximate 24h change, the
- * same math a "24h change" figure anywhere else would use.
+ * Real prices for the landing page's live ticker strip and hero chart — no
+ * synthesized numbers. Price is the latest 1h candle's close; changePct
+ * compares it to the close ~24 candles back (~24h ago) for an approximate
+ * 24h change, the same math a "24h change" figure anywhere else would use.
  */
 export function useMarketTicker() {
   return useQuery({
@@ -52,7 +56,7 @@ export function useMarketTicker() {
           const changePct = earliest.close.gt(0)
             ? latest.close.minus(earliest.close).div(earliest.close)
             : new BigNumber(0);
-          return { symbol: s.symbol, price: latest.close, changePct };
+          return { symbol: s.symbol, price: latest.close, changePct, closes: sorted.map((c) => c.close) };
         }),
       );
 

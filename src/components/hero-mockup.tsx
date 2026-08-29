@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
-import BigNumber from "bignumber.js";
+import { useEffect, useMemo, useState } from "react";
+import type BigNumber from "bignumber.js";
 import { TokenIcon } from "@/components/token-icon";
 import { formatUsd, formatPercent } from "@/lib/format";
-import { useMarketTicker } from "@/lib/use-market-ticker";
-import { useSymbols } from "@/lib/use-subaccount-data";
-import { useCandlesticks } from "@/lib/use-candlesticks";
+import { useMarketTicker, type TickerEntry } from "@/lib/use-market-ticker";
 
 const DEPTH_ROWS = [
   { side: "ask" as const, width: 62 },
@@ -21,20 +19,19 @@ const CHART_W = 300;
 const CHART_H = 108;
 const CHART_PAD = 10;
 
-/**
- * A glowing trend line built from real hourly AAPL-PERP closes — segments
- * color by direction (up/down), with a blurred "halo" stroke under a crisp
- * one for the neon look, entry/live dots, a dotted mean line, and a couple
- * of restrained corner accents. No screenshot, no invented numbers: every
- * value on this chart is a real candle close from Nado's indexer.
- */
-function NeonTrendChart({ productId }: { productId: number | undefined }) {
-  const candles = useCandlesticks(productId, 3600, 18);
+const ROTATE_MS = 4500;
 
+/**
+ * A glowing trend line built from real hourly closes — segments color by
+ * direction (up/down), with a blurred "halo" stroke under a crisp one for
+ * the neon look, entry/live dots, a dotted mean line, and a couple of
+ * restrained corner accents. Takes the same closes array the ticker strip
+ * already fetched for this symbol, so switching symbols doesn't refetch.
+ */
+function NeonTrendChart({ closes: closesBN }: { closes: BigNumber[] }) {
   const points = useMemo(() => {
-    const data = [...(candles.data ?? [])].sort((a, b) => a.time.minus(b.time).toNumber());
-    if (data.length < 2) return null;
-    const closes = data.map((c) => c.close.toNumber());
+    const closes = closesBN.map((c) => c.toNumber());
+    if (closes.length < 2) return null;
     const lo = Math.min(...closes);
     const hi = Math.max(...closes);
     const range = hi - lo || 1;
@@ -49,13 +46,13 @@ function NeonTrendChart({ productId }: { productId: number | undefined }) {
         value: c,
       })),
     };
-  }, [candles.data]);
+  }, [closesBN]);
 
   if (!points) {
     return <div className="mt-3 h-28 w-full animate-pulse rounded-lg bg-surface-raised" />;
   }
 
-  const { pts, avgY, raw } = points;
+  const { pts, avgY } = points;
   const first = pts[0];
   const last = pts[pts.length - 1];
   const overallUp = last.value >= first.value;
@@ -147,15 +144,42 @@ function NeonTrendChart({ productId }: { productId: number | undefined }) {
         className="absolute text-[9px] font-medium uppercase tracking-wide text-positive"
         style={{ left: `${(first.x / CHART_W) * 100}%`, top: `${(first.y / CHART_H) * 100}%`, transform: "translate(-2px, 8px)" }}
       >
-        Entry {formatUsd(new BigNumber(raw[0]))}
+        Entry {formatUsd(closesBN[0])}
       </span>
       <span
         className="absolute whitespace-nowrap text-[9px] font-medium uppercase tracking-wide text-cove-indigo"
         style={{ left: `${(last.x / CHART_W) * 100}%`, top: `${(last.y / CHART_H) * 100}%`, transform: "translate(-100%, -18px)" }}
       >
-        Live {formatUsd(new BigNumber(raw[raw.length - 1]))} {overallUp ? "+" : ""}
+        Live {formatUsd(closesBN[closesBN.length - 1])} {overallUp ? "+" : ""}
         {changePct.toFixed(1)}%
       </span>
+    </div>
+  );
+}
+
+function MockupCard({ entry }: { entry: TickerEntry }) {
+  const up = entry.changePct.gte(0);
+  return (
+    <div key={entry.symbol} className="cove-fade-in">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <TokenIcon symbol={entry.symbol} size={22} />
+          <span className="text-sm font-semibold text-foreground">{entry.symbol}</span>
+        </div>
+        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground-muted">
+          Nado
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="text-2xl font-semibold tabular-nums text-foreground">{formatUsd(entry.price)}</span>
+        <span className={`text-xs font-medium ${up ? "text-positive" : "text-negative"}`}>
+          {up ? "+" : ""}
+          {formatPercent(entry.changePct)}
+        </span>
+      </div>
+
+      <NeonTrendChart closes={entry.closes} />
     </div>
   );
 }
@@ -164,17 +188,24 @@ function NeonTrendChart({ productId }: { productId: number | undefined }) {
  * A stylized preview of the Trade page — not a screenshot, built from the
  * same visual language (card, order-book bars, tactile buttons) as the real
  * thing, so the hero reads as "here's the product" rather than stock art.
- * The headline price is real (a live AAPL-PERP quote) where it's cheap to
- * be; the depth rows are illustrative, same as any product mockup's chrome.
+ * Rotates through a handful of real markets (crypto + tokenized stocks)
+ * rather than parking on one symbol, so it doesn't read as "this is the
+ * only thing NadoCove trades" — same list the ticker strip below shows.
  */
 export function HeroMockup() {
   const ticker = useMarketTicker();
-  const symbolsQuery = useSymbols();
-  const aapl = ticker.data?.find((e) => e.symbol === "AAPL-PERP");
-  const up = aapl ? aapl.changePct.gte(0) : true;
-  const aaplProductId = Object.values(symbolsQuery.data?.symbols ?? {}).find(
-    (s) => s.symbol === "AAPL-PERP",
-  )?.productId;
+  const entries = ticker.data ?? [];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (entries.length < 2) return;
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % entries.length);
+    }, ROTATE_MS);
+    return () => clearInterval(id);
+  }, [entries.length]);
+
+  const current = entries[index % Math.max(entries.length, 1)];
 
   return (
     <div className="relative mx-auto w-full max-w-sm" style={{ perspective: "1200px" }}>
@@ -189,26 +220,11 @@ export function HeroMockup() {
       />
 
       <div className="hero-mockup-card cove-scale-in relative rounded-2xl border border-border bg-surface p-5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TokenIcon symbol="AAPL-PERP" size={22} />
-            <span className="text-sm font-semibold text-foreground">AAPL-PERP</span>
-          </div>
-          <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground-muted">
-            Nado
-          </span>
-        </div>
-
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-2xl font-semibold tabular-nums text-foreground">
-            {aapl ? formatUsd(aapl.price) : "—"}
-          </span>
-          <span className={`text-xs font-medium ${up ? "text-positive" : "text-negative"}`}>
-            {aapl ? `${up ? "+" : ""}${formatPercent(aapl.changePct)}` : ""}
-          </span>
-        </div>
-
-        <NeonTrendChart productId={aaplProductId} />
+        {current ? (
+          <MockupCard entry={current} />
+        ) : (
+          <div className="h-[194px] animate-pulse rounded-lg bg-surface-raised" />
+        )}
 
         <div className="mt-4 flex flex-col gap-1">
           {DEPTH_ROWS.map((row, i) => (
@@ -229,6 +245,19 @@ export function HeroMockup() {
             Sell
           </span>
         </div>
+
+        {entries.length > 1 && (
+          <div className="mt-4 flex justify-center gap-1.5">
+            {entries.map((e, i) => (
+              <span
+                key={e.symbol}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === index ? "w-4 bg-cove-indigo" : "w-1.5 bg-border"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
