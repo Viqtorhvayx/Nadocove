@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useSymbols } from "@/lib/use-subaccount-data";
+import { useTradableMarketSymbols } from "@/lib/use-tradable-market-symbols";
 
 function StatIcon({ path }: { path: string }) {
   return (
@@ -24,19 +24,21 @@ function Stat({ icon, value, label }: { icon: ReactNode; value: string; label: s
 /**
  * Honest stat badges — no invented vanity metrics (NadoCove is new and has
  * no user base to brag about yet). The market count is real, pulled live
- * from Nado's own symbol list; the other two are true architectural facts,
- * not marketing claims.
+ * and filtered the same way the Trade page's own picker is (not_tradable
+ * markets and the KBTC/BTC-PERP duplicate excluded), so this number always
+ * agrees with what's actually selectable there. The other two badges are
+ * true architectural facts, not marketing claims.
  */
 export function StatBadges() {
-  const symbolsQuery = useSymbols();
-  const marketCount = Object.keys(symbolsQuery.data?.symbols ?? {}).length;
+  const tradableSymbols = useTradableMarketSymbols();
+  const marketCount = tradableSymbols.length;
 
   return (
     <div className="flex flex-wrap gap-2.5">
       <Stat
         icon={<StatIcon path="M3 8.5h14M3 12.5h14M7 4.5v11M13 4.5v11" />}
-        value={marketCount > 0 ? `${marketCount}+` : "—"}
-        label="live markets"
+        value={marketCount > 0 ? `${marketCount}` : "—"}
+        label="tradable markets"
       />
       <Stat
         icon={<StatIcon path="M10 2.5 4 5v5c0 4 2.5 6.5 6 7.5 3.5-1 6-3.5 6-7.5V5l-6-2.5Z" />}
