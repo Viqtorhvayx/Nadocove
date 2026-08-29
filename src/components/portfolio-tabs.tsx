@@ -11,6 +11,7 @@ import {
   type PerpBalanceWithProduct,
 } from "@nadohq/shared";
 import type { GetEngineSubaccountSummaryResponse, GetEngineSubaccountFeeRatesResponse } from "@nadohq/engine-client";
+import { CashIncentivesCard } from "@/components/cash-incentives-card";
 import { ClaimBuilderFeeCard } from "@/components/claim-builder-fee-card";
 import { FeeTierCard } from "@/components/fee-tier-card";
 import { PnlStatsCard } from "@/components/pnl-stats-card";
@@ -119,6 +120,7 @@ function StatsTab({
       <PnlStatsCard owner={address} subaccountName={subaccountName} />
       <FeeTierCard query={feeRatesQuery} />
       {address && <PointsCard address={address} />}
+      <CashIncentivesCard address={address} />
       <ClaimBuilderFeeCard />
     </div>
   );
