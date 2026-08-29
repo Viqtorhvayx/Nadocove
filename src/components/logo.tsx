@@ -4,8 +4,9 @@ type LogoMarkProps = {
 };
 
 /**
- * The mark: an indigo cove (open ring, mouth facing the water on the right)
- * cradling a calm amber center — the sheltered counterpoint to Nado's storm.
+ * The mark: an asymmetric indigo inlet — an organic cove shape, not a
+ * geometric ring — cradling a calm amber sun/center. The sheltered
+ * counterpoint to Nado's storm.
  */
 export function LogoMark({ size = 32, className }: LogoMarkProps) {
   return (
@@ -20,13 +21,10 @@ export function LogoMark({ size = 32, className }: LogoMarkProps) {
       aria-label="NadoCove"
     >
       <path
-        d="M36.256 34.28 A16 16 0 1 1 36.256 13.72"
-        stroke="var(--color-cove-indigo, #4C6EF5)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        fill="none"
+        d="M6 24 C6 12 16 6 26 8 C36 10 42 18 40 26 C38 34 28 40 18 38 C10 36.5 6 30 6 24 Z"
+        fill="var(--color-cove-indigo, #7C93FF)"
       />
-      <circle cx="21" cy="24" r="5.5" fill="var(--color-cove-amber, #F5B942)" />
+      <circle cx="27" cy="22" r="6" fill="var(--color-cove-amber, #F5B942)" />
     </svg>
   );
 }
