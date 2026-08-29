@@ -66,6 +66,7 @@ type PlaceOrderInput = {
   price: string; // human units, e.g. "80000"
   executionType: OrderExecutionType;
   expirySeconds?: number;
+  reduceOnly?: boolean;
 };
 
 export function usePlaceOrder() {
@@ -82,6 +83,7 @@ export function usePlaceOrder() {
       price,
       executionType,
       expirySeconds = 60,
+      reduceOnly,
     }: PlaceOrderInput) => {
       if (!nadoClient || !address) {
         throw new Error("Connect a wallet first.");
@@ -93,6 +95,7 @@ export function usePlaceOrder() {
 
       const appendix = packOrderAppendix({
         orderExecutionType: executionType,
+        reduceOnly,
         builder:
           BUILDER_ID > 0
             ? { builderId: BUILDER_ID, builderFeeRate: BUILDER_FEE_RATE }

@@ -2,14 +2,29 @@
 
 import { useState } from "react";
 import BigNumber from "bignumber.js";
-import { removeDecimals, type OrderExecutionType } from "@nadohq/shared";
+import {
+  removeDecimals,
+  ProductEngineType,
+  QUOTE_PRODUCT_ID,
+  type OrderExecutionType,
+  type SpotBalanceWithProduct,
+  type PerpBalanceWithProduct,
+} from "@nadohq/shared";
 import type { EngineSymbol } from "@nadohq/engine-client";
-import { Card } from "@/components/card";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
-import { MarketSelect } from "@/components/market-select";
-import { formatUsd } from "@/lib/format";
-import { useCancelOrder, useOpenOrders, usePlaceOrder } from "@/lib/use-subaccount-data";
+import { TokenIcon } from "@/components/token-icon";
+import { formatAmount, formatUsd } from "@/lib/format";
+import { maxLeverageFor } from "@/lib/market-leverage";
+import { useMarketLiquidity } from "@/lib/use-market-liquidity";
+import {
+  useCancelOrder,
+  useOpenOrders,
+  usePlaceOrder,
+  useSubaccountSummary,
+} from "@/lib/use-subaccount-data";
 import { BUILDER_ID, BUILDER_FEE_RATE } from "@/lib/builder";
+
+const MARKET_SLIPPAGE_TOLERANCE = 0.01; // 1% — the buffer added to the best price so an "ioc" order actually fills as a market order.
 
 function OpenOrders({ productId }: { productId: number | undefined }) {
   const openOrders = useOpenOrders(productId);
@@ -56,126 +71,198 @@ function OpenOrders({ productId }: { productId: number | undefined }) {
   );
 }
 
+type OrderMode = "market" | "limit" | "pro";
+
 type TradePanelProps = {
-  symbols: EngineSymbol[];
-  selectedProductId: number | undefined;
-  onProductIdChange: (productId: number) => void;
+  symbol: EngineSymbol | undefined;
 };
 
-export function TradePanel({ symbols, selectedProductId, onProductIdChange }: TradePanelProps) {
+export function TradePanel({ symbol }: TradePanelProps) {
+  const selectedProductId = symbol?.productId;
   const placeOrder = usePlaceOrder();
+  const summary = useSubaccountSummary();
+  const liquidity = useMarketLiquidity(selectedProductId, 40);
 
   const [side, setSide] = useState<"buy" | "sell">("buy");
-  const [executionType, setExecutionType] =
-    useState<OrderExecutionType>("default");
+  const [mode, setMode] = useState<OrderMode>("market");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
+  const [reduceOnly, setReduceOnly] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const selectedSymbol = symbols.find((s) => s.productId === selectedProductId)?.symbol;
+  const bestAsk = liquidity.data?.asks
+    ? [...liquidity.data.asks].sort((a, b) => a.price.minus(b.price).toNumber())[0]?.price
+    : undefined;
+  const bestBid = liquidity.data?.bids
+    ? [...liquidity.data.bids].sort((a, b) => b.price.minus(a.price).toNumber())[0]?.price
+    : undefined;
+  const mid = bestAsk && bestBid ? bestAsk.plus(bestBid).div(2) : undefined;
+
+  const executionType: OrderExecutionType =
+    mode === "market" ? "ioc" : mode === "pro" ? "post_only" : "default";
+
+  // Market orders don't take a user-entered price — send the best price
+  // plus a slippage buffer so the IOC order actually crosses the book.
+  // Cheap enough to recompute each render; no need to memoize it.
+  const effectivePrice = (() => {
+    if (mode !== "market") return price;
+    const best = side === "buy" ? bestAsk : bestBid;
+    if (!best) return "";
+    const buffered = side === "buy" ? best.times(1 + MARKET_SLIPPAGE_TOLERANCE) : best.times(1 - MARKET_SLIPPAGE_TOLERANCE);
+    return buffered.toString();
+  })();
+
+  const quoteBalance = summary.data?.balances.find(
+    (b): b is SpotBalanceWithProduct => b.type === ProductEngineType.SPOT && b.productId === QUOTE_PRODUCT_ID,
+  );
+  const position = summary.data?.balances.find(
+    (b): b is PerpBalanceWithProduct => b.type === ProductEngineType.PERP && b.productId === selectedProductId,
+  );
+
+  const maxLeverage = maxLeverageFor(symbol);
+  const marginFraction = symbol ? 1 - symbol.longWeightInitial.toNumber() : undefined;
 
   const canSubmit =
     selectedProductId !== undefined &&
     Number(amount) > 0 &&
-    Number(price) > 0 &&
+    Number(effectivePrice) > 0 &&
     !placeOrder.isPending;
 
   const notional =
-    Number(amount) > 0 && Number(price) > 0
-      ? new BigNumber(amount).times(price)
+    Number(amount) > 0 && Number(effectivePrice) > 0
+      ? new BigNumber(amount).times(effectivePrice)
       : undefined;
+  const marginRequired = notional && marginFraction !== undefined ? notional.times(marginFraction) : undefined;
 
   return (
-    <Card
-      title="Trade"
-      note={
-        BUILDER_ID > 0
-          ? `Builder #${BUILDER_ID} · ${BUILDER_FEE_RATE / 100}bps`
-          : "no Builder ID set — see .env.example"
-      }
-    >
+    <div className="rounded-2xl border border-border bg-surface p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),inset_0_-1px_0_0_rgba(0,0,0,0.2),0_16px_32px_-18px_rgba(0,0,0,0.7)]">
+      <div className="flex items-center gap-2">
+        <span className="rounded-full border border-border bg-surface-raised px-2.5 py-1 text-xs font-medium text-foreground-muted">
+          Cross margin
+        </span>
+        {maxLeverage !== undefined && (
+          <span className="rounded-full border border-border bg-surface-raised px-2.5 py-1 text-xs font-medium text-foreground-muted">
+            Up to {maxLeverage}x
+          </span>
+        )}
+        <span className="ml-auto text-[11px] text-foreground-muted">
+          {BUILDER_ID > 0 ? `Builder #${BUILDER_ID} · ${BUILDER_FEE_RATE / 100}bps` : "no Builder ID set"}
+        </span>
+      </div>
+
+      <div className="mt-4 flex gap-4 border-b border-border">
+        {(
+          [
+            ["market", "Market"],
+            ["limit", "Limit"],
+            ["pro", "Pro"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setMode(id)}
+            className={`border-b-2 pb-2 text-sm font-semibold transition ${
+              mode === id ? "border-cove-indigo text-foreground" : "border-transparent text-foreground-muted hover:text-foreground"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <form
-        className="flex flex-col gap-4"
+        className="mt-4 flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (!canSubmit) return;
           setConfirmOpen(true);
         }}
       >
-        <div className="grid grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-            Market
-            <MarketSelect
-              symbols={symbols}
-              selectedProductId={selectedProductId}
-              onChange={onProductIdChange}
-            />
-          </label>
-
-          <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-            Order type
-            <select
-              value={executionType}
-              onChange={(e) =>
-                setExecutionType(e.target.value as OrderExecutionType)
-              }
-              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
-            >
-              <option value="default">Limit</option>
-              <option value="ioc">Market (IOC)</option>
-              <option value="post_only">Post only</option>
-            </select>
-          </label>
-        </div>
-
         <div className="flex gap-2">
           {(["buy", "sell"] as const).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setSide(s)}
-              className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold capitalize transition ${
+              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold capitalize transition ${
                 side === s
                   ? s === "buy"
-                    ? "border-positive bg-positive/10 text-positive shadow-[inset_0_1px_0_0_rgba(52,211,153,0.3),0_0_12px_-4px_rgba(52,211,153,0.5)]"
-                    : "border-negative bg-negative/10 text-negative shadow-[inset_0_1px_0_0_rgba(248,113,113,0.3),0_0_12px_-4px_rgba(248,113,113,0.5)]"
-                  : "btn-tactile-secondary border-transparent text-foreground-muted hover:text-foreground"
+                    ? "btn-tactile-buy text-background"
+                    : "btn-tactile-sell text-background"
+                  : "btn-tactile-secondary text-foreground-muted hover:text-foreground"
               }`}
             >
-              {s}
+              {s === "buy" ? "Buy / Long" : "Sell / Short"}
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-            Amount
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-foreground-muted">Available to Trade</span>
+          <span className="font-medium tabular-nums text-foreground">
+            {quoteBalance ? `${formatAmount(quoteBalance.amount)} USDC` : "0.00 USDC"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-foreground-muted">Current Position</span>
+          <span className="font-medium tabular-nums text-foreground">
+            {position ? `${formatAmount(position.amount)} ${symbol?.symbol.split("-")[0] ?? ""}` : `0.00000 ${symbol?.symbol.split("-")[0] ?? ""}`}
+          </span>
+        </div>
+
+        <label className="flex flex-col gap-1 text-xs text-foreground-muted">
+          Size
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-3 py-2">
             <input
               inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.01"
-              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
+              placeholder="0.00"
+              className="w-full bg-transparent text-sm text-foreground focus:outline-none"
             />
-          </label>
+            {symbol && (
+              <span className="flex shrink-0 items-center gap-1.5 text-xs text-foreground-muted">
+                <TokenIcon symbol={symbol.symbol} size={14} />
+                {symbol.symbol.split("-")[0]}
+              </span>
+            )}
+          </div>
+        </label>
+
+        {mode !== "market" && (
           <label className="flex flex-col gap-1 text-xs text-foreground-muted">
-            Price (limit)
+            Price
             <input
               inputMode="decimal"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="80000"
-              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground"
+              placeholder={mid ? mid.toFixed(2) : "0.00"}
+              className="rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-foreground focus:outline-none"
             />
           </label>
-        </div>
+        )}
+
+        {mode === "pro" && (
+          <label className="flex items-center gap-2 text-xs text-foreground-muted">
+            <input
+              type="checkbox"
+              checked={reduceOnly}
+              onChange={(e) => setReduceOnly(e.target.checked)}
+              className="h-3.5 w-3.5 rounded border-border accent-cove-indigo"
+            />
+            Reduce Only
+          </label>
+        )}
 
         <button
           type="submit"
           disabled={!canSubmit}
-          className="btn-tactile-primary rounded-full px-5 py-2.5 text-sm font-semibold text-background disabled:opacity-50"
+          className={`rounded-full py-2.5 text-sm font-semibold text-background disabled:opacity-50 ${
+            side === "buy" ? "btn-tactile-buy" : "btn-tactile-sell"
+          }`}
         >
-          Review {side === "buy" ? "buy" : "sell"} order
+          {side === "buy" ? "Buy" : "Sell"} {symbol?.symbol ?? ""}
         </button>
 
         {placeOrder.isError && (
@@ -188,6 +275,23 @@ export function TradePanel({ symbols, selectedProductId, onProductIdChange }: Tr
         {placeOrder.isSuccess && (
           <p className="text-sm text-positive">Order placed.</p>
         )}
+
+        <div className="flex flex-col gap-1.5 border-t border-border pt-3 text-xs">
+          <div className="flex justify-between">
+            <span className="text-foreground-muted">Order Value</span>
+            <span className="tabular-nums text-foreground">{notional ? formatUsd(notional) : "—"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-foreground-muted">Margin Required</span>
+            <span className="tabular-nums text-foreground">{marginRequired ? formatUsd(marginRequired) : "—"}</span>
+          </div>
+          {mode === "market" && (
+            <div className="flex justify-between">
+              <span className="text-foreground-muted">Max Slippage</span>
+              <span className="tabular-nums text-foreground">{(MARKET_SLIPPAGE_TOLERANCE * 100).toFixed(2)}%</span>
+            </div>
+          )}
+        </div>
       </form>
 
       <ConfirmDialog
@@ -197,30 +301,24 @@ export function TradePanel({ symbols, selectedProductId, onProductIdChange }: Tr
         onConfirm={() => {
           if (selectedProductId === undefined) return;
           placeOrder.mutate(
-            { productId: selectedProductId, side, amount, price, executionType },
+            { productId: selectedProductId, side, amount, price: effectivePrice, executionType, reduceOnly: mode === "pro" ? reduceOnly : undefined },
             { onSuccess: () => setConfirmOpen(false) },
           );
         }}
-        confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${selectedSymbol ?? ""}`}
+        confirmLabel={`${side === "buy" ? "Buy" : "Sell"} ${symbol?.symbol ?? ""}`}
         confirming={placeOrder.isPending}
       >
-        <ConfirmRow label="Market" value={selectedSymbol ?? "—"} />
+        <ConfirmRow label="Market" value={symbol?.symbol ?? "—"} />
         <ConfirmRow
           label="Side"
           value={<span className="capitalize">{side}</span>}
         />
         <ConfirmRow
           label="Type"
-          value={
-            executionType === "default"
-              ? "Limit"
-              : executionType === "ioc"
-                ? "Market (IOC)"
-                : "Post only"
-          }
+          value={mode === "market" ? "Market (IOC)" : mode === "pro" ? "Post only" : "Limit"}
         />
         <ConfirmRow label="Amount" value={amount || "—"} />
-        <ConfirmRow label="Price" value={price ? formatUsd(new BigNumber(price)) : "—"} />
+        <ConfirmRow label="Price" value={effectivePrice ? formatUsd(new BigNumber(effectivePrice)) : "—"} />
         <ConfirmRow
           label="Notional"
           value={notional ? formatUsd(notional) : "—"}
@@ -239,6 +337,6 @@ export function TradePanel({ symbols, selectedProductId, onProductIdChange }: Tr
         </h3>
         <OpenOrders productId={selectedProductId} />
       </div>
-    </Card>
+    </div>
   );
 }
