@@ -50,18 +50,15 @@ export function ProfileBadges({
           Verified · @{social.data.username}
         </a>
       )}
-      {topPlacements.map((p) => {
-        const percentile = p.rank / p.totalParticipants;
-        return (
-          <span
-            key={`${p.contestId}-${p.rankType}`}
-            title={p.contestTitle}
-            className="rounded-full border border-cove-amber/40 bg-cove-amber/10 px-3 py-1 text-xs font-medium text-cove-amber"
-          >
-            {percentile <= 0.01 ? "🏆" : "⭐"} {p.rank} {RANK_TYPE_SHORT[p.rankType] ?? p.rankType}
-          </span>
-        );
-      })}
+      {topPlacements.map((p) => (
+        <span
+          key={`${p.contestId}-${p.rankType}`}
+          title={p.contestTitle}
+          className="rounded-full border border-cove-amber/40 bg-cove-amber/10 px-3 py-1 text-xs font-medium text-cove-amber"
+        >
+          {p.rank} {RANK_TYPE_SHORT[p.rankType] ?? p.rankType}
+        </span>
+      ))}
     </div>
   );
 }
