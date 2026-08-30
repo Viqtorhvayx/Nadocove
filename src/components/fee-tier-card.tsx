@@ -71,7 +71,7 @@ export function FeeTierCard({
                     <td className="py-2 text-foreground">
                       <span className="flex items-center gap-2">
                         {symbol && <TokenIcon symbol={symbol} size={16} />}
-                        {symbol ?? `#${productId}`}
+                        {symbol ?? `${productId}`}
                       </span>
                     </td>
                     <td className="py-2 text-right text-foreground-muted">

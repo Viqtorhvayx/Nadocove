@@ -44,7 +44,7 @@ export function PositionsTable({
               <span className="flex items-center gap-2">
                 {symbol && <TokenIcon symbol={symbol} size={18} />}
                 <span className="font-medium text-foreground">
-                  {symbol ?? `#${position.productId}`}
+                  {symbol ?? `${position.productId}`}
                 </span>
                 <span
                   className={`rounded px-1.5 py-0.5 text-xs font-semibold uppercase ${

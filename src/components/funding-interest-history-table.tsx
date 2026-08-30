@@ -78,7 +78,7 @@ export function FundingInterestHistoryTable({
                     <td className="py-2 text-foreground">
                       <span className="flex items-center gap-2">
                         {symbol && <TokenIcon symbol={symbol} size={16} />}
-                        {symbol ?? `#${row.productId}`}
+                        {symbol ?? `${row.productId}`}
                       </span>
                     </td>
                     <td className="py-2 text-foreground-muted">{row.kind}</td>

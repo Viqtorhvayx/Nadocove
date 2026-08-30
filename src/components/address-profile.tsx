@@ -50,7 +50,7 @@ export function AddressProfile({ address }: { address: string }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
-            Public profile · read-only
+            Public profile
           </span>
           <h1 className="text-2xl font-semibold text-foreground">
             <Identity address={address} />

@@ -54,7 +54,7 @@ export function PointsCard({ address }: { address: string | undefined }) {
               <div className="min-w-0">
                 <div className="text-xs text-foreground-muted">Rank</div>
                 <div className="break-words text-lg font-semibold text-foreground">
-                  #{currentEpoch.rank}
+                  {currentEpoch.rank}
                 </div>
               </div>
               <div className="min-w-0">
@@ -74,7 +74,7 @@ export function PointsCard({ address }: { address: string | undefined }) {
 
           <div className="border-t border-border pt-3 text-xs text-foreground-muted">
             All-time: {formatPoints(points.data.allTimePoints.points)} points
-            · rank #{points.data.allTimePoints.rank} · tier{" "}
+            · rank {points.data.allTimePoints.rank} · tier{" "}
             {points.data.allTimePoints.tier}
           </div>
         </div>

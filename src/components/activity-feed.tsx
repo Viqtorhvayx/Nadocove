@@ -53,7 +53,7 @@ export function ActivityFeed() {
             .sort((a, b) => b.timestamp.toNumber() - a.timestamp.toNumber())
             .map((fill) => {
               const isBuy = fill.baseFilled.gt(0);
-              const symbol = symbolMap[fill.productId] ?? `#${fill.productId}`;
+              const symbol = symbolMap[fill.productId] ?? `${fill.productId}`;
               // baseFilled/quoteFilled are raw 18-decimal fixed-point — a
               // ratio of the two is scale-invariant, so price needs no
               // conversion, but the standalone size below does.

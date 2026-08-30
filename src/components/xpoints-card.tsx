@@ -49,7 +49,7 @@ export function XPointsCard({ address }: { address: string | undefined }) {
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs text-foreground-muted">Rank</div>
-                  <div className="break-words text-lg font-semibold text-foreground">#{currentEpoch.rank}</div>
+                  <div className="break-words text-lg font-semibold text-foreground">{currentEpoch.rank}</div>
                 </div>
               </div>
 
@@ -69,7 +69,7 @@ export function XPointsCard({ address }: { address: string | undefined }) {
           )}
 
           <div className="border-t border-border pt-3 text-xs text-foreground-muted">
-            All-time: {formatPoints(xpoints.data.allTimePoints.totalPoints)} points · rank #
+            All-time: {formatPoints(xpoints.data.allTimePoints.totalPoints)} points · rank{" "}
             {xpoints.data.allTimePoints.rank}
           </div>
         </div>

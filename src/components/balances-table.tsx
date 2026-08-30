@@ -40,7 +40,7 @@ export function BalancesTable({
           >
             <span className="flex items-center gap-2 font-medium text-foreground">
               {symbol && <TokenIcon symbol={symbol} size={18} />}
-              {symbol ?? `#${balance.productId}`}
+              {symbol ?? `${balance.productId}`}
             </span>
             <span className="text-right">
               <span className="text-foreground">{formatAmount(balance.amount)}</span>{" "}

@@ -57,7 +57,7 @@ export function RecentActivityPanel({
                   </span>
                   <span className="flex flex-col">
                     <span className="font-medium text-foreground">
-                      {isBuy ? "Buy" : "Sell"} {symbol ?? `#${fill.productId}`}
+                      {isBuy ? "Buy" : "Sell"} {symbol ?? `${fill.productId}`}
                     </span>
                     <span className="text-xs text-foreground-muted">{formatRelativeTime(fill.timestamp.toNumber())}</span>
                   </span>

@@ -58,7 +58,7 @@ export function ProfileBadges({
             title={p.contestTitle}
             className="rounded-full border border-cove-amber/40 bg-cove-amber/10 px-3 py-1 text-xs font-medium text-cove-amber"
           >
-            {percentile <= 0.01 ? "🏆" : "⭐"} #{p.rank} {RANK_TYPE_SHORT[p.rankType] ?? p.rankType}
+            {percentile <= 0.01 ? "🏆" : "⭐"} {p.rank} {RANK_TYPE_SHORT[p.rankType] ?? p.rankType}
           </span>
         );
       })}

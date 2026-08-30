@@ -46,7 +46,7 @@ function TokensTab({ query }: { query: SummaryQuery }) {
           <div key={balance.productId} className="flex items-center justify-between py-3 text-sm">
             <span className="flex items-center gap-2.5">
               {symbol && <TokenIcon symbol={symbol} size={26} />}
-              <span className="font-medium text-foreground">{symbol ?? `#${balance.productId}`}</span>
+              <span className="font-medium text-foreground">{symbol ?? `${balance.productId}`}</span>
             </span>
             <span className="text-right">
               <div className="text-foreground">{formatUsd(calcSpotBalanceValue(balance))}</div>
@@ -81,7 +81,7 @@ function PerpsTab({ query }: { query: SummaryQuery }) {
               {symbol && <TokenIcon symbol={symbol} size={26} />}
               <span className="flex flex-col">
                 <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-foreground">{symbol ?? `#${position.productId}`}</span>
+                  <span className="font-medium text-foreground">{symbol ?? `${position.productId}`}</span>
                   <span
                     className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
                       side === "long" ? "bg-positive/10 text-positive" : "bg-negative/10 text-negative"

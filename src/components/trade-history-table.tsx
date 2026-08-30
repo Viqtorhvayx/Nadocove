@@ -31,7 +31,7 @@ export function TradeHistoryTable({
       const size = removeDecimals(fill.baseFilled.abs(), 18);
       const fee = removeDecimals(fill.totalFee, 18);
       const realizedPnl = removeDecimals(fill.realizedPnl, 18);
-      const symbol = symbolMap[fill.productId] ?? `#${fill.productId}`;
+      const symbol = symbolMap[fill.productId] ?? `${fill.productId}`;
       return [
         new Date(fill.timestamp.toNumber() * 1000).toISOString(),
         symbol,
@@ -117,7 +117,7 @@ export function TradeHistoryTable({
                     <td className="py-2 text-foreground">
                       <span className="flex items-center gap-2">
                         {symbol && <TokenIcon symbol={symbol} size={16} />}
-                        {symbol ?? `#${fill.productId}`}
+                        {symbol ?? `${fill.productId}`}
                       </span>
                     </td>
                     <td className="py-2">
