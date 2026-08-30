@@ -141,6 +141,13 @@ export default function Home() {
             Nado
           </a>
           . It is not affiliated with or endorsed by the Nado team. ·{" "}
+          <Link
+            href="/docs"
+            className="underline decoration-border underline-offset-2 hover:text-foreground"
+          >
+            Docs
+          </Link>{" "}
+          ·{" "}
           <a
             href="https://docs.nado.xyz"
             target="_blank"
