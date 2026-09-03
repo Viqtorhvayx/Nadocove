@@ -32,7 +32,7 @@ function isActive(pathname: string, href: string) {
 function Sidebar() {
   const pathname = usePathname();
   return (
-    <aside className="hidden w-44 shrink-0 sm:block">
+    <aside className="hidden w-44 shrink-0 border-r border-border sm:block">
       <nav className="sticky top-6 flex flex-col gap-1">
         {TABS.map((tab) => {
           const active = isActive(pathname, tab.href);
