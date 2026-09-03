@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import BigNumber from "bignumber.js";
 import { ProductEngineType } from "@nadohq/shared";
 import type { EngineSymbol } from "@nadohq/engine-client";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatMarketPair, formatUsd, formatPercent } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
 import { useFavoriteMarkets } from "@/lib/use-favorite-markets";
@@ -196,7 +196,7 @@ export function MarketSearchModal({
                   ★
                 </span>
                 <span className="flex items-center gap-2 truncate font-medium">
-                  <TokenIcon symbol={s.symbol} size={18} />
+                  <PairIcon symbol={s.symbol} size={18} />
                   <span className="truncate">{formatMarketPair(s.symbol)}</span>
                   {leverage !== undefined && (
                     <span className="shrink-0 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-foreground-muted">

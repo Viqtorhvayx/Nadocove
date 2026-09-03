@@ -6,7 +6,7 @@ import { useAccount } from "wagmi";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
 import { Identity } from "@/components/identity";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatAmount, formatRelativeTime, formatUsd } from "@/lib/format";
 import { useFollowingList } from "@/lib/use-follow";
 import { useFollowingActivity } from "@/lib/use-following-activity";
@@ -68,7 +68,7 @@ export function ActivityFeed() {
                   className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 text-sm transition hover:bg-surface-raised"
                 >
                   <span className="flex min-w-0 items-center gap-2">
-                    <TokenIcon symbol={symbol} size={18} />
+                    <PairIcon symbol={symbol} size={18} />
                     <span className="truncate">
                       <Identity address={fill.subaccountOwner} />{" "}
                       <span className={isBuy ? "text-positive" : "text-negative"}>

@@ -9,7 +9,7 @@ import {
 } from "@nadohq/shared";
 import type { GetEngineSubaccountSummaryResponse } from "@nadohq/engine-client";
 import { Card } from "@/components/card";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 
@@ -42,7 +42,7 @@ export function PositionsTable({
               className="flex items-center justify-between py-2.5 text-sm first:pt-0 last:pb-0"
             >
               <span className="flex items-center gap-2">
-                {symbol && <TokenIcon symbol={symbol} size={18} />}
+                {symbol && <PairIcon symbol={symbol} size={18} />}
                 <span className="font-medium text-foreground">
                   {symbol ?? `${position.productId}`}
                 </span>

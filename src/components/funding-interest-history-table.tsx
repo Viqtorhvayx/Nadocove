@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { IndexerProductPayment } from "@nadohq/indexer-client";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatPercent, formatRelativeTime, formatSignedUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
 import { useSymbols } from "@/lib/use-subaccount-data";
@@ -77,7 +77,7 @@ export function FundingInterestHistoryTable({
                     <td className="py-2 text-foreground-muted">{formatRelativeTime(row.timestamp.toNumber())}</td>
                     <td className="py-2 text-foreground">
                       <span className="flex items-center gap-2">
-                        {symbol && <TokenIcon symbol={symbol} size={16} />}
+                        {symbol && <PairIcon symbol={symbol} size={16} />}
                         {symbol ?? `${row.productId}`}
                       </span>
                     </td>

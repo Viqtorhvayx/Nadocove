@@ -12,7 +12,7 @@ import {
 } from "@nadohq/shared";
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatAmount, formatMarketPair, formatUsd, QUOTE_ASSET_SYMBOL } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
@@ -295,7 +295,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
             />
             {symbol && (
               <span className="flex shrink-0 items-center gap-1.5 text-xs text-foreground-muted">
-                <TokenIcon symbol={symbol.symbol} size={14} />
+                <PairIcon symbol={symbol.symbol} size={14} />
                 {symbol.symbol.split("-")[0]}
               </span>
             )}

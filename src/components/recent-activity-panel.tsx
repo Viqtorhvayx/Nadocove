@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { removeDecimals } from "@nadohq/shared";
 import { Skeleton } from "@/components/skeleton";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatAmount, formatRelativeTime, formatUsd } from "@/lib/format";
 import { useMatchHistory } from "@/lib/use-match-history";
 import { useSymbolMap } from "@/lib/use-symbol-map";
@@ -53,7 +53,7 @@ export function RecentActivityPanel({
               <div key={`${fill.digest}-${fill.submissionIndex}`} className="flex items-center justify-between py-2.5 text-sm">
                 <span className="flex items-center gap-2.5">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-raised">
-                    {symbol ? <TokenIcon symbol={symbol} size={18} /> : null}
+                    {symbol ? <PairIcon symbol={symbol} size={18} /> : null}
                   </span>
                   <span className="flex flex-col">
                     <span className="font-medium text-foreground">

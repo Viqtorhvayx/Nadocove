@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type BigNumber from "bignumber.js";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatUsd, formatPercent } from "@/lib/format";
 import { useMarketTicker, type TickerEntry } from "@/lib/use-market-ticker";
 
@@ -189,7 +189,7 @@ function MockupCard({ entry }: { entry: TickerEntry }) {
     <div key={entry.symbol} className="cove-fade-in">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TokenIcon symbol={entry.symbol} size={22} />
+          <PairIcon symbol={entry.symbol} size={22} />
           <span className="text-sm font-semibold text-foreground">{entry.symbol}</span>
         </div>
         <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground-muted">

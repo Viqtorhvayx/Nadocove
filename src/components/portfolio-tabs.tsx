@@ -17,7 +17,7 @@ import { FeeTierCard } from "@/components/fee-tier-card";
 import { PnlStatsCard } from "@/components/pnl-stats-card";
 import { PointsCard } from "@/components/points-card";
 import { PortfolioOverviewCard } from "@/components/portfolio-overview-card";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon, TokenIcon } from "@/components/token-icon";
 import { XPointsCard } from "@/components/xpoints-card";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
@@ -78,7 +78,7 @@ function PerpsTab({ query }: { query: SummaryQuery }) {
         return (
           <div key={position.productId} className="flex items-center justify-between py-3 text-sm">
             <span className="flex items-center gap-2.5">
-              {symbol && <TokenIcon symbol={symbol} size={26} />}
+              {symbol && <PairIcon symbol={symbol} size={26} />}
               <span className="flex flex-col">
                 <span className="flex items-center gap-1.5">
                   <span className="font-medium text-foreground">{symbol ?? `${position.productId}`}</span>

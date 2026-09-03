@@ -3,7 +3,7 @@
 import { removeDecimals } from "@nadohq/shared";
 import { Card } from "@/components/card";
 import { Skeleton } from "@/components/skeleton";
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { downloadCsv } from "@/lib/csv-export";
 import { formatAmount, formatSignedUsd, formatUsd, pnlColorClass } from "@/lib/format";
 import { useSymbolMap } from "@/lib/use-symbol-map";
@@ -116,7 +116,7 @@ export function TradeHistoryTable({
                     </td>
                     <td className="py-2 text-foreground">
                       <span className="flex items-center gap-2">
-                        {symbol && <TokenIcon symbol={symbol} size={16} />}
+                        {symbol && <PairIcon symbol={symbol} size={16} />}
                         {symbol ?? `${fill.productId}`}
                       </span>
                     </td>

@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenIcon } from "@/components/token-icon";
+import { PairIcon } from "@/components/token-icon";
 import { formatUsd, formatPercent } from "@/lib/format";
 import { useMarketTicker, type TickerEntry } from "@/lib/use-market-ticker";
 
@@ -8,7 +8,7 @@ function TickerPill({ entry }: { entry: TickerEntry }) {
   const up = entry.changePct.gte(0);
   return (
     <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-border bg-surface px-4 py-2">
-      <TokenIcon symbol={entry.symbol} size={20} />
+      <PairIcon symbol={entry.symbol} size={20} />
       <span className="text-sm font-semibold text-foreground">{entry.symbol}</span>
       <span className="text-sm text-foreground-muted">{formatUsd(entry.price)}</span>
       <span className={`text-sm font-medium ${up ? "text-positive" : "text-negative"}`}>
