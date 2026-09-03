@@ -66,6 +66,19 @@ textarea:focus-visible,
   outline-offset: 2px;
 }
 
+/* A handful of inputs (trade Size/Price, deposit/withdraw Amount, the
+   market search box) already sit inside a wrapper that shows its own
+   focus-within border. Adding this browser-native ring on top of that
+   drew two indigo outlines at once — a soft rounded one from the wrapper
+   and a tight, sharp-cornered one hugging the bare <input> underneath it.
+   A Tailwind focus-visible:outline-none utility can't win here: Tailwind
+   utilities live in @layer utilities, and unlayered CSS (this stylesheet)
+   always beats layered CSS regardless of specificity — so this override
+   has to be a plain rule too, not a utility class. */
+input.focus-ring-none:focus-visible {
+  outline: none;
+}
+
 ::selection {
   background-color: var(--color-cove-indigo);
   color: var(--background);

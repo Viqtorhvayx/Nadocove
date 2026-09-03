@@ -134,7 +134,7 @@ export function MarketSearchModal({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search markets…"
-              className="w-full bg-transparent text-sm text-foreground placeholder:text-foreground-muted focus:outline-none"
+              className="focus-ring-none w-full bg-transparent text-sm text-foreground placeholder:text-foreground-muted focus:outline-none"
             />
           </div>
           <div className="mt-3 flex gap-1.5">

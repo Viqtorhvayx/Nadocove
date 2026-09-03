@@ -107,7 +107,7 @@ export function DepositPanel() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full bg-transparent text-2xl font-semibold text-foreground focus:outline-none"
+                className="focus-ring-none w-full bg-transparent text-2xl font-semibold text-foreground focus:outline-none"
               />
               <button
                 type="button"

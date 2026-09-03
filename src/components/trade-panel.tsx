@@ -291,7 +291,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="w-full bg-transparent text-base text-foreground focus:outline-none"
+              className="focus-ring-none w-full bg-transparent text-base text-foreground focus:outline-none"
             />
             {symbol && (
               <span className="flex shrink-0 items-center gap-1.5 text-xs text-foreground-muted">
@@ -328,7 +328,7 @@ export function TradePanel({ symbol }: TradePanelProps) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder={mid ? mid.toFixed(2) : "0.00"}
-              className="rounded-lg border border-border bg-surface-raised px-4 py-3.5 text-base text-foreground transition-colors focus:border-cove-indigo focus:outline-none"
+              className="focus-ring-none rounded-lg border border-border bg-surface-raised px-4 py-3.5 text-base text-foreground transition-colors focus:border-cove-indigo focus:outline-none"
             />
           </label>
         )}
