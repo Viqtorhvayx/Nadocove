@@ -1,4 +1,4 @@
-import { resolveIconTicker, hasTokenIcon, fallbackColorFor } from "@/lib/token-icon";
+import { resolveIconTicker, hasTokenIcon, iconFormatFor, fallbackColorFor } from "@/lib/token-icon";
 
 type TokenIconProps = {
   symbol: string;
@@ -18,7 +18,7 @@ export function TokenIcon({ symbol, size = 20, className }: TokenIconProps) {
   if (hasTokenIcon(symbol)) {
     return (
       <img
-        src={`/tokens/${ticker}.svg`}
+        src={`/tokens/${ticker}.${iconFormatFor(symbol)}`}
         alt=""
         width={size}
         height={size}
