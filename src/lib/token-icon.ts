@@ -23,9 +23,14 @@ export const TOKEN_ICON_FORMATS: Record<string, string> = {
   ton: "svg", xaut: "svg",
   // Tokenized-stock tickers Nado lists that have a real, recognizable company
   // mark (from simple-icons) — badge-style, brand-colored circle + logotype.
-  // Anything not in this set (AMZN, HIMS, LLY, MRVL, MSFT, MU, NBIS, ORCL,
-  // SNDK, QQQ, SPY, ...) has no widely available brand mark and falls back
-  // to the initials badge below rather than a made-up one.
+  // AMZN, MSFT, ORCL, and SNDK are deliberately NOT here: simple-icons did
+  // have entries for Amazon/Microsoft/Oracle/SanDisk at some point, but a
+  // CDN was still serving them from a stale cached release — checked against
+  // the actual currently-published simple-icons version and all four are
+  // gone from it (most likely pulled after a trademark takedown request,
+  // which simple-icons has a documented history of doing for exactly this
+  // kind of company). Not worth re-adding a mark the source library itself
+  // removed, so those four still fall back to the initials badge.
   aapl: "svg", amd: "svg", avgo: "svg", dell: "svg", googl: "svg",
   intc: "svg", meta: "svg", mstr: "svg", nvda: "svg", spcx: "svg",
   tsla: "svg", crcl: "svg",
@@ -38,11 +43,20 @@ export const TOKEN_ICON_FORMATS: Record<string, string> = {
   aster: "png", bera: "png", bonk: "jpg", chip: "png", eigen: "jpg",
   ena: "png", fartcoin: "jpg", hype: "jpg", mega: "jpeg", mon: "png",
   ondo: "png", peng: "png", pengu: "png", pump: "jpg",
+  skr: "jpg", sky: "jpg", useless: "png", virtual: "png", vvv: "png",
+  wld: "jpeg", wlfi: "png", xpl: "png", zro: "jpeg",
+  // Tokenized stocks/ETFs with no real logo in any curated icon set, but
+  // CoinGecko indexes them anyway since they trade on-chain as tokenized
+  // products (Backpack Securities/Robinhood/Dinari all mint these). Picked
+  // the Backpack Securities listing for each — properly branded per-company
+  // marks, unlike Dinari's entries which all reuse one generic Dinari badge
+  // regardless of the underlying company. Same treatment as SKHY (SK Hynix)
+  // below, just not a semiconductor ticker like the rest of that group.
+  mrvl: "png", mu: "png", nbis: "png", hims: "png", lly: "png",
+  qqq: "png", spy: "png",
   // SKHY is SK Hynix, tokenized via Backpack Securities — a company mark
   // like the AAPL/TSLA set above, not a native crypto token.
   skhy: "png",
-  skr: "jpg", sky: "jpg", useless: "png", virtual: "png", vvv: "png",
-  wld: "jpeg", wlfi: "png", xpl: "png", zro: "jpeg",
 };
 
 /** Wrapped/synthetic variants that should visually use their underlying asset's logo. */
@@ -61,6 +75,8 @@ const ALIASES: Record<string, string> = {
   wmetax: "meta",
   wnvdax: "nvda",
   wtslax: "tsla",
+  wqqqx: "qqq",
+  wspyx: "spy",
 };
 
 /**
