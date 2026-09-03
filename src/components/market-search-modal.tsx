@@ -156,9 +156,10 @@ export function MarketSearchModal({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-[auto_1.5fr_1fr_1fr_1fr] gap-2 px-4 py-2 text-[11px] text-foreground-muted">
+          <div className="grid grid-cols-[auto_1.5fr_auto_1fr_1fr_1fr] gap-2 px-4 py-2 text-[11px] text-foreground-muted">
             <span />
             <span>Market</span>
+            <span />
             <span className="text-right">Last Price</span>
             <span className="text-right">24h Change</span>
             <span className="text-right">Volume</span>
@@ -180,7 +181,7 @@ export function MarketSearchModal({
                   onSelect(s.productId);
                   onClose();
                 }}
-                className={`grid w-full grid-cols-[auto_1.5fr_1fr_1fr_1fr] items-center gap-2 px-4 py-2 text-left text-sm transition ${
+                className={`grid w-full grid-cols-[auto_1.5fr_auto_1fr_1fr_1fr] items-center gap-2 px-4 py-2 text-left text-sm transition ${
                   i === highlighted ? "bg-surface-raised" : ""
                 } ${s.productId === selectedProductId ? "text-cove-indigo" : "text-foreground"}`}
               >
@@ -198,12 +199,14 @@ export function MarketSearchModal({
                 <span className="flex items-center gap-2 truncate font-medium">
                   <PairIcon symbol={s.symbol} size={18} />
                   <span className="truncate">{formatMarketPair(s.symbol)}</span>
-                  {leverage !== undefined && (
-                    <span className="shrink-0 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-foreground-muted">
-                      {leverage}x
-                    </span>
-                  )}
                 </span>
+                {leverage !== undefined ? (
+                  <span className="shrink-0 rounded-full border border-border px-1.5 py-0.5 text-center text-[10px] text-foreground-muted">
+                    {leverage}x
+                  </span>
+                ) : (
+                  <span />
+                )}
                 <span className="text-right tabular-nums text-foreground-muted">
                   {ov ? formatUsd(new BigNumber(ov.lastPrice)) : "—"}
                 </span>

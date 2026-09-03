@@ -3,8 +3,9 @@
 import BigNumber from "bignumber.js";
 import type { EngineSymbol } from "@nadohq/engine-client";
 import { PairIcon } from "@/components/token-icon";
-import { formatMarketPair, formatUsd, formatPercent } from "@/lib/format";
+import { formatAmount, formatMarketPair, formatUsd, formatPercent } from "@/lib/format";
 import { maxLeverageFor } from "@/lib/market-leverage";
+import { use24hRange } from "@/lib/use-24h-range";
 import type { MarketOverviewEntry } from "@/lib/use-market-overview";
 import { usePerpPrices } from "@/lib/use-perp-prices";
 
@@ -34,9 +35,11 @@ type MarketHeaderProps = {
  */
 export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderProps) {
   const perpPrices = usePerpPrices(symbol?.productId);
+  const range24h = use24hRange(symbol?.productId);
   const maxLeverage = maxLeverageFor(symbol);
   const changePct = overview ? overview.priceChangePercent24h / 100 : undefined;
   const up = changePct !== undefined && changePct >= 0;
+  const baseSymbol = symbol?.symbol.split("-")[0];
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -46,11 +49,11 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
         className="flex items-center gap-2.5 rounded-xl px-2 py-1 text-left transition hover:bg-surface-raised"
       >
         {symbol && <PairIcon symbol={symbol.symbol} size={28} />}
-        <span className="text-lg font-semibold text-foreground">
+        <span className="whitespace-nowrap text-lg font-semibold text-foreground">
           {symbol ? formatMarketPair(symbol.symbol) : "Select market"}
         </span>
         {maxLeverage !== undefined && (
-          <span className="rounded-full border border-border bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-foreground-muted">
+          <span className="whitespace-nowrap rounded-full border border-border bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-foreground-muted">
             Up to {maxLeverage}x
           </span>
         )}
@@ -68,8 +71,20 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
           valueClassName={changePct === undefined ? undefined : up ? "text-positive" : "text-negative"}
         />
         <Stat
+          label="24h High"
+          value={range24h.high ? formatUsd(range24h.high) : "—"}
+        />
+        <Stat
+          label="24h Low"
+          value={range24h.low ? formatUsd(range24h.low) : "—"}
+        />
+        <Stat
           label="24h Volume"
           value={overview ? formatUsd(new BigNumber(overview.quoteVolume24h), true) : "—"}
+        />
+        <Stat
+          label={`24h Vol (${baseSymbol ?? "Base"})`}
+          value={overview ? formatAmount(new BigNumber(overview.baseVolume24h), 2) : "—"}
         />
         <Stat
           label="Open Interest"

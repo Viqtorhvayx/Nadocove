@@ -7,6 +7,7 @@ export type MarketOverviewEntry = {
   lastPrice: number;
   priceChangePercent24h: number;
   quoteVolume24h: number;
+  baseVolume24h: number;
   fundingRate: BigNumber | undefined;
   openInterestQuote: BigNumber | undefined;
 };
@@ -44,6 +45,7 @@ export function useMarketOverview(productIds: number[]) {
           lastPrice: ticker.lastPrice,
           priceChangePercent24h: ticker.priceChangePercent24h,
           quoteVolume24h: ticker.quoteVolume,
+          baseVolume24h: ticker.baseVolume,
           fundingRate: fundingRates[ticker.productId]?.fundingRate,
           openInterestQuote: rawOi ? removeDecimals(rawOi, 18) : undefined,
         };
