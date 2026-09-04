@@ -11,7 +11,7 @@ import { usePerpPrices } from "@/lib/use-perp-prices";
 
 function Stat({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string }) {
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex shrink-0 flex-col gap-0.5">
       <span className="text-[11px] text-foreground-muted">{label}</span>
       <span className={`text-sm font-medium tabular-nums ${valueClassName ?? "text-foreground"}`}>{value}</span>
     </div>
@@ -46,7 +46,7 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
       <button
         type="button"
         onClick={onOpenSearch}
-        className="flex items-center gap-2.5 rounded-xl px-2 py-1 text-left transition hover:bg-surface-raised"
+        className="flex shrink-0 items-center gap-2 rounded-xl px-1.5 py-1 text-left transition hover:bg-surface-raised"
       >
         {symbol && <PairIcon symbol={symbol.symbol} size={28} />}
         <span className="whitespace-nowrap text-lg font-semibold text-foreground">
@@ -62,7 +62,7 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
         </svg>
       </button>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-3 px-2">
+      <div className="flex flex-nowrap gap-x-2 overflow-x-auto px-2">
         <Stat label="Mark" value={perpPrices.data ? formatUsd(perpPrices.data.markPrice) : "—"} />
         <Stat label="Oracle" value={perpPrices.data ? formatUsd(perpPrices.data.indexPrice) : "—"} />
         <Stat
@@ -83,7 +83,7 @@ export function MarketHeader({ symbol, overview, onOpenSearch }: MarketHeaderPro
           value={overview ? formatUsd(new BigNumber(overview.quoteVolume24h), true) : "—"}
         />
         <Stat
-          label={`24h Vol (${baseSymbol ?? "Base"})`}
+          label={`Vol (${baseSymbol ?? "Base"})`}
           value={overview ? formatAmount(new BigNumber(overview.baseVolume24h), 2) : "—"}
         />
         <Stat
