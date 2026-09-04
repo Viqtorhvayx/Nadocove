@@ -2,9 +2,10 @@
 
 import { useTradableMarketSymbols } from "@/lib/use-tradable-market-symbols";
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({ icon, value, label }: { icon?: string; value: string; label: string }) {
   return (
     <div className="flex items-center gap-2.5 rounded-full border border-border bg-surface px-4 py-2">
+      {icon && <img src={icon} alt="" width={16} height={16} className="shrink-0 rounded-full" />}
       <span className="text-sm font-semibold text-foreground">{value}</span>
       <span className="text-xs text-foreground-muted">{label}</span>
     </div>
@@ -27,7 +28,7 @@ export function StatBadges() {
     <div className="flex flex-wrap gap-2.5">
       <Stat value={marketCount > 0 ? `${marketCount}` : "—"} label="tradable markets" />
       <Stat label="you hold the keys" value="Non-custodial" />
-      <Stat label="settles on Nado's orderbook" value="Built on Ink" />
+      <Stat icon="/chains/ink.jpg" label="settles on Nado's orderbook" value="Built on Ink" />
     </div>
   );
 }
