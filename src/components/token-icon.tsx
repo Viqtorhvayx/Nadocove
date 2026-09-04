@@ -73,7 +73,7 @@ export function PairIcon({ symbol, size = 20, className }: TokenIconProps) {
         }}
       >
         <img
-          src="/tokens/usdt0.svg"
+          src="/tokens/usdt0.jpg"
           alt=""
           width={quoteSize}
           height={quoteSize}
