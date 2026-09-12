@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ConfirmDialog, ConfirmRow } from "@/components/confirm-dialog";
 import { TokenSelectDropdown } from "@/components/token-select-dropdown";
+import { formatAmount } from "@/lib/format";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 import { useDepositableProductIds, useTokenMetadata, type DepositableToken } from "@/lib/use-deposit";
 import { useMaxWithdrawable, useWithdraw } from "@/lib/use-withdraw";
@@ -31,7 +32,13 @@ export function WithdrawPanel() {
   const maxWithdrawable = useMaxWithdrawable(selectedProductId);
   const withdraw = useWithdraw();
 
-  const maxWithdrawableHuman = maxWithdrawable.data?.toFixed();
+  // Two forms on purpose: the exact value backs the Max button so a user can
+  // withdraw their balance to the last decimal, while the display is rounded
+  // so the label doesn't read as an 18-decimal wall of digits.
+  const maxWithdrawableExact = maxWithdrawable.data?.toFixed();
+  const maxWithdrawableDisplay = maxWithdrawable.data
+    ? formatAmount(maxWithdrawable.data)
+    : undefined;
 
   const exceedsMax = exceedsMaxWithdrawable(amount, maxWithdrawable.data);
 
@@ -68,7 +75,7 @@ export function WithdrawPanel() {
             <span className="flex items-center justify-between">
               Amount
               <span className="text-foreground-muted">
-                Available: {maxWithdrawableHuman ?? "—"} {selectedToken?.symbol ?? ""}
+                Available: {maxWithdrawableDisplay ?? "—"} {selectedToken?.symbol ?? ""}
               </span>
             </span>
             <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-4 transition-colors focus-within:border-cove-indigo">
@@ -81,8 +88,8 @@ export function WithdrawPanel() {
               />
               <button
                 type="button"
-                onClick={() => maxWithdrawableHuman && setAmount(maxWithdrawableHuman)}
-                disabled={!maxWithdrawableHuman}
+                onClick={() => maxWithdrawableExact && setAmount(maxWithdrawableExact)}
+                disabled={!maxWithdrawableExact}
                 className="btn-tactile-secondary shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold text-foreground-muted transition hover:text-foreground disabled:opacity-50"
               >
                 Max

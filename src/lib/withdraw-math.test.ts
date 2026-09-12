@@ -1,6 +1,41 @@
 import { describe, expect, it } from "vitest";
 import BigNumber from "bignumber.js";
+import { removeDecimals } from "@nadohq/shared";
 import { canSubmitWithdraw, exceedsMaxWithdrawable } from "@/lib/withdraw-math";
+
+/**
+ * The unit contract at the hook boundary, which is where this actually broke.
+ * Everything below this block tests the pure math with values that are
+ * already human-scaled, so none of it could catch useMaxWithdrawable handing
+ * over the engine's raw 18-decimal integer instead.
+ *
+ * The raw figure here was observed live on Nado mainnet: an account holding
+ * 78.03 USD₮0 reports max_withdrawable as "78032262443384210699".
+ */
+describe("max withdrawable arrives as raw x18 and must be rescaled", () => {
+  const RAW_FROM_ENGINE = new BigNumber("78032262443384210699");
+  const HUMAN = removeDecimals(RAW_FROM_ENGINE, 18);
+
+  it("rescales the engine value to real units", () => {
+    expect(HUMAN.toFixed(6)).toBe("78.032262");
+  });
+
+  it("guards an over-balance withdrawal once rescaled", () => {
+    expect(exceedsMaxWithdrawable("100", HUMAN)).toBe(true);
+    expect(canSubmitWithdraw({
+      selectedProductId: 0,
+      amount: "100",
+      maxWithdrawableLoaded: true,
+      exceedsMax: exceedsMaxWithdrawable("100", HUMAN),
+      isPending: false,
+    })).toBe(false);
+  });
+
+  it("lets every realistic amount through when NOT rescaled (the old bug)", () => {
+    expect(exceedsMaxWithdrawable("100", RAW_FROM_ENGINE)).toBe(false);
+    expect(exceedsMaxWithdrawable("999999", RAW_FROM_ENGINE)).toBe(false);
+  });
+});
 
 describe("exceedsMaxWithdrawable", () => {
   it("is false while max withdrawable is still loading", () => {

@@ -127,12 +127,21 @@ export function useDepositFlow() {
         throw new Error("Connect a wallet first.");
       }
 
+      // waitForTransactionReceipt resolves for reverted transactions too — it
+      // only rejects if the receipt never arrives. Without checking .status a
+      // reverted approval would fall through to a deposit that cannot succeed,
+      // and a reverted deposit would be reported to the user as confirmed.
       if (needsApproval) {
         const approveHash = await nadoClient.spot.approveAllowance({
           productId,
           amount: amountRaw,
         });
-        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+        const approveReceipt = await publicClient.waitForTransactionReceipt({
+          hash: approveHash,
+        });
+        if (approveReceipt.status !== "success") {
+          throw new Error("Token approval failed on-chain. Nothing was deposited.");
+        }
       }
 
       const depositHash = await nadoClient.spot.deposit({
@@ -141,7 +150,12 @@ export function useDepositFlow() {
         amount: amountRaw,
         referralCode: referralCode || undefined,
       });
-      await publicClient.waitForTransactionReceipt({ hash: depositHash });
+      const depositReceipt = await publicClient.waitForTransactionReceipt({
+        hash: depositHash,
+      });
+      if (depositReceipt.status !== "success") {
+        throw new Error("Deposit transaction reverted on-chain. Your funds were not moved.");
+      }
       return depositHash;
     },
     onSuccess: () => {

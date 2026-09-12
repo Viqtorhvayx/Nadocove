@@ -1,16 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import BigNumber from "bignumber.js";
-import { addDecimals } from "@nadohq/shared";
+import { addDecimals, removeDecimals } from "@nadohq/shared";
 import { useNadoClient } from "@/lib/use-nado-client";
 import { useActiveSubaccount } from "@/lib/subaccount-context";
 
 /**
  * Engine-estimated max withdrawable amount for a product in the active
- * subaccount — already margin-aware (won't let a withdrawal break a
- * leveraged position's health), unlike just reading the raw balance.
- * Already in human-readable units, same convention as the rest of the
- * engine's responses (see the note in format.ts).
+ * subaccount — margin-aware (won't let a withdrawal break a leveraged
+ * position's health), unlike just reading the raw balance.
+ *
+ * Rescaled to human units here. The SDK's getMaxWithdrawable returns
+ * `toBigNumber(max_withdrawable)` with no removeDecimals call (see
+ * EngineQueryClient.getMaxWithdrawable), leaving a raw 18-decimal integer
+ * — the same SDK bug class already documented in
+ * rescale-subaccount-summary.ts and use-nlp-pool.ts. Confirmed live against
+ * Nado mainnet: a funded account holding 78.03 USD₮0 came back as
+ * "78032262443384210699", so without this the panel printed a 20-digit
+ * "Available" figure, the Max button typed that integer into the amount
+ * box (which the submit path then scaled by 1e18 again), and the
+ * exceeds-max guard compared human input against a raw x18 bound and so
+ * never fired.
  */
 export function useMaxWithdrawable(productId: number | undefined) {
   const { address } = useAccount();
@@ -25,6 +35,7 @@ export function useMaxWithdrawable(productId: number | undefined) {
         subaccountName,
         productId: productId!,
       }),
+    select: (maxWithdrawable) => removeDecimals(maxWithdrawable, 18),
     enabled: Boolean(nadoClient && address && productId !== undefined),
     refetchInterval: 15_000,
   });
